@@ -226,7 +226,7 @@
         .beginRadialGradientFill(["#ff00ff", "#000000"], [0, 0.5], canvas.width * 0.5, canvas.height * 0.5, 0, canvas.width * 0.5, canvas.height * 0.5, 640)
         .drawRect(0, 0, canvas.width, canvas.height);
     purple_circle = new createjs.Shape(purple_graphics);
-    purple_circle.alpha = 0.0;
+    //purple_circle.alpha = 0.0;
 
     var red_graphics = new createjs.Graphics();
     red_graphics
@@ -244,10 +244,10 @@
 
     // 下の画像の先読み処理
     var baseimg = new Image();
-    baseimg.src = "bg2.jpg";
+    baseimg.src = "bg2.png";
     // 画像の読み込み完了後に Bitmap のインスタンスを作成する
     baseimg.onload = function () {
-        basemap = new createjs.Bitmap("bg2.jpg");
+        basemap = new createjs.Bitmap("bg2.png");
         basemap.scaleX = 1.0 // x方向の拡大率変更
         basemap.scaleY = 1.0 // y方向の拡大率変更
         //stage.addChild(basemap);
@@ -255,7 +255,7 @@
 
     // 上の画像の先読み処理
     var img = new Image();
-    img.src = "bg2.jpg";
+    img.src = "fr2.png";
 
     /* -----------------------------------------------------------------
     createjsのモデルを配置　画像の読み込み完了後に Bitmap のインスタンスを作成する
@@ -350,9 +350,11 @@
             //     .beginRadialGradientFill([colorStart, "#000000"], [0, 0.5], canvas.width * 0.5, canvas.height * 0.5, 0, canvas.width * 0.5, canvas.height * 0.5, 640)
             //     .drawRect(0, 0, canvas.width, canvas.height);
 
+            //console.log(Dist1);
             purple_circle.alpha = (Dist0 - 10) * 0.02;
             red_circle.alpha = (Dist0 - 40) * 0.02;
             white_circle.alpha = (Dist0 - 70) * 0.02;
+
 
             stage.update();
 
@@ -666,8 +668,6 @@
         arr.push({ "t": Date.now() - startTime, "x": x0, "y": y0 });
         _arr.push({ "t": Date.now() - startTime, "x": xDist, "y": yDist, "z": Dist0 });
 
-        console.log(Dist0);
-        console.log(Dist1);
     }
 
 
