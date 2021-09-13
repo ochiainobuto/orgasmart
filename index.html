@@ -247,7 +247,7 @@
     baseimg.src = "bg.jpg";
     // 画像の読み込み完了後に Bitmap のインスタンスを作成する
     baseimg.onload = function () {
-        basemap = new createjs.Bitmap("bg2.png");
+        basemap = new createjs.Bitmap("bg2.jpg");
         basemap.scaleX = 1.0 // x方向の拡大率変更
         basemap.scaleY = 1.0 // y方向の拡大率変更
         //stage.addChild(basemap);
@@ -255,7 +255,7 @@
 
     // 上の画像の先読み処理
     var img = new Image();
-    img.src = "bg2.png";
+    img.src = "bg2.jpg";
 
     /* -----------------------------------------------------------------
     createjsのモデルを配置　画像の読み込み完了後に Bitmap のインスタンスを作成する
