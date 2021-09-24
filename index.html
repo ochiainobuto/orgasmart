@@ -5,14 +5,15 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Document</title>
-    <script src="https://code.createjs.com/easeljs-0.8.1.min.js"></script>
+
+    <script src="https://code.createjs.com/1.0.0/createjs.min.js"></script>
 </head>
 
 <body>
     <div id="wrap">
-        <div id="mask" class="hidden"></div>
-        <section id="modal" class="hidden">
-            <div id="qr_code" align="center">
+        <div id="mask"></div>
+        <section id="modal">
+            <div id="modal_title" align="center">
                 <img src="vagina.png" alt="vagina" title="vagina">
             </div>
             <div id="message">
@@ -28,7 +29,7 @@
                 </p>
             </div>
             <div id="close">
-                START!!!
+                LOADING...
             </div>
             <br>
             <div id="qr_code" align="center">
@@ -36,10 +37,10 @@
             </div>
         </section>
         <div id="top">
-            <canvas id="canvas1" width="380" height="570"></canvas>
+            <canvas id="graph" width="380" height="100"></canvas>
         </div>
         <div id="top">
-            <canvas id="graph" width="380" height="100"></canvas>
+            <canvas id="canvas1" width="380" height="570"></canvas>
         </div>
     </div>
 </body>
@@ -92,6 +93,7 @@
     }
 
     #mask {
+        animation: fadeIn 2.0s ease-in 0s forwards;
         background: rgba(0, 0, 0, 0.4);
         position: fixed;
         top: 0;
@@ -102,7 +104,12 @@
     }
 
     #modal {
+        animation: fadeIn 1.0s ease-in 0s forwards;
         background: rgba(26, 87, 130, 0.6);
+        background-image: url("./girl_png/girl001.png");
+        background-repeat: no-repeat;
+        background-position: center center;
+
         color: rgb(168, 168, 168);
         width: 300px;
         padding: 10px;
@@ -117,15 +124,52 @@
         z-index: 2;
     }
 
+    @keyframes fadeIn {
+        0% {
+            display: none;
+            opacity: 0;
+        }
+
+        1% {
+            display: block;
+            opacity: 0;
+        }
+
+        100% {
+            display: block;
+            opacity: 1;
+        }
+    }
+
+    @keyframes fadeOut {
+        0% {
+            display: block;
+            opacity: 1;
+        }
+
+        1% {
+            display: block;
+            opacity: 1;
+        }
+
+        100% {
+            display: none;
+            opacity: 0;
+        }
+    }
+
     #modal p {
         margin: 0 0 20px;
     }
 
     #mask.hidden {
+        animation: fadeOut 0.3s ease-in 0s forwards;
         display: none;
+
     }
 
     #modal.hidden {
+        animation: fadeOut 0.3s ease-in 0s forwards;
         display: none;
     }
 </style>
@@ -135,6 +179,29 @@
     window.addEventListener('touchmove', function (event) {
         event.preventDefault();
     });
+
+    /* -----------------------------------------------------------------
+    言語の取得
+    -------------------------------------------------------------------- */
+    var language = (window.navigator.languages && window.navigator.languages[0]) ||
+        window.navigator.language ||
+        window.navigator.userLanguage ||
+        window.navigator.browserLanguage;
+
+    /* -----------------------------------------------------------------
+    ヴァギナを触って、オーガズムに達してください。早く動かすよりもゆっくり動かすほうが感じます。
+    動かしながらランダムに位置が変わる感じるポイントを探してください。
+    感じるポイントは、声が大きくなり、赤いグラフが上昇します。
+    そのポイントを指で触りながら、オーガズムに導いてください。
+    -------------------------------------------------------------------- */
+
+    if (language == "ja") {
+        document.getElementById("message").innerHTML = "<p><br>Touch the vagina to reach orgasm. It feels better to move slowly than to move fast.<br>Look for a point where you can feel the position change randomly while moving.<br>The point you feel is that your voice becomes louder and the red graph rises.<br>Please guide to orgasm while touching that point with your finger.</p>";
+    }
+    else {
+        document.getElementById("message").innerHTML = "<p><br>ヴァギナを触って、オーガズムに達してください。早く動かすよりもゆっくり動かすほうが感じます。<br>動かしながらランダムに位置が変わる感じるポイントを探してください。<br>感じるポイントは、声が大きくなり、赤いグラフが上昇します。<br>そのポイントを指で触りながら、オーガズムに導いてください。</p>";
+    }
+
 
     /* -----------------------------------------------------------------
     スタートの警告
@@ -150,26 +217,53 @@
     const modal = document.getElementById('modal');
     const mask = document.getElementById('mask');
 
-    close.addEventListener('click', function () {
-        modal.classList.add('hidden');
-        mask.classList.add('hidden');
-        arr = [];
-        _arr = [];
-        myStart = new Date();
-        myInterval = setInterval("stopWatch()", 1);
-        o_Interval = setInterval("o_Watch()", 60);
-        h1_point.x = canvas.width * 0.5 + Math.floor((Math.random() * 2 - 1) * 14);
-        h1_point.y = canvas.height * 0.2 + Math.floor((Math.random() * 2 - 1) * 14);
-        h2_point_x = canvas.width * 0.5 + Math.floor((Math.random() * 2 - 1) * canvas.width * 0.05);
-        h2_point.y = canvas.height * 0.6 + Math.floor((Math.random() * 2 - 1) * canvas.height * 0.2);
-        h3_point_x = canvas.width * 0.5 + Math.floor((Math.random() * 2 - 1) * canvas.width * 0.05);
-        h3_point.y = canvas.height * 0.6 + Math.floor((Math.random() * 2 - 1) * canvas.height * 0.2);
-    });
+    var x_margin = document.getElementById("canvas1").getBoundingClientRect().left;
+    var y_margin = document.getElementById("canvas1").getBoundingClientRect().top;
 
-    mask.addEventListener('click', function () {
-        modal.classList.add('hidden');
-        mask.classList.add('hidden');
-    });
+    var myStart;
+    var myStop;
+    var playing;
+
+    function click_func() {
+        close.addEventListener('click', function () {
+            myStart = new Date();
+
+            modal.classList.add('hidden');
+            mask.classList.add('hidden');
+
+            // var music = new Audio();
+            // music.src = './Super Nova.mp3'; // 音声ファイルの指定
+            // music.load(); // audioの読み込み
+            // music.play();
+            o_value = 0.0;
+            Dist0 = 0;
+            Dist1 = 0;
+            dragging = false;
+            playing = true;
+
+            arr = [];
+            _arr = [];
+
+            h1_point.x = canvas.width * 0.5 + Math.floor((Math.random() * 2 - 1) * 14);
+            h1_point.y = canvas.height * 0.2 + Math.floor((Math.random() * 2 - 1) * 14);
+            h2_point_x = canvas.width * 0.5 + Math.floor((Math.random() * 2 - 1) * (canvas.width - x_margin) * 0.05);
+            h2_point.y = canvas.height * 0.6 + Math.floor((Math.random() * 2 - 1) * (canvas.height - y_margin) * 0.2);
+            h3_point_x = canvas.width * 0.5 + Math.floor((Math.random() * 2 - 1) * (canvas.width - x_margin) * 0.05);
+            h3_point.y = canvas.height * 0.6 + Math.floor((Math.random() * 2 - 1) * (canvas.height - y_margin) * 0.2);
+            h1_point.alpha = 0.5;
+            h2_point.alpha = 0.5;
+            h3_point.alpha = 0.5;
+
+            previous_num1 = Math.floor(Math.random() * voice_list1.length);
+            voice_list1[previous_num1].currentTime = voice_list1[previous_num1].duration;
+
+            previous_num2 = Math.floor(Math.random() * voice_list2.length);
+            voice_list2[previous_num2].currentTime = voice_list2[previous_num2].duration;
+
+            stopwatch_time = 20;
+
+        });
+    };
 
     /* -----------------------------------------------------------------
     各種オブジェクトの作成
@@ -180,14 +274,12 @@
     var _ctx = _canvas.getContext('2d');
 
     var stage = new createjs.Stage(canvas); // Stage クラスのインスタンスを作成する
+    //var _stage = new createjs.Stage(_canvas); // Stage クラスのインスタンスを作成する
 
-    var value_text = new createjs.Text("Orgasm Value:", "20px Arial", "#ff7700"); // Text クラスのインスタンスを作成する
-    value_text.textAlign = "start";
-    value_text.x = canvas.width * 0.05;
-
-    var stopW_text = new createjs.Text("Time:", "20px Arial", "#ff7700"); // Text クラスのインスタンスを作成する
-    stopW_text.textAlign = "end";
-    stopW_text.x = canvas.width * 0.95;
+    // var stopW_text = new createjs.Text("Time:", "20px Arial", "#ff7700"); // Text クラスのインスタンスを作成する
+    // stopW_text.textAlign = "end";
+    // stopW_text.x = canvas.width * 0.9;
+    // stopW_text.y = -canvas.height * 0.1;
 
     var h2_point_x = 0;
     var h3_point_x = 0;
@@ -198,27 +290,19 @@
     circle.x = canvas.width * 0.5;
     circle.y = canvas.height * 0.2;
     circle.scaleY = 1.6;
-    //circle.alpha = 0.5;
+    circle.alpha = 0.0;
 
     var h1_point = new createjs.Shape();
-    h1_point.graphics.beginFill("rgb(222, 255, 92)").drawCircle(0, 0, 6);
-    h1_point.x = canvas.width * 0.5 + Math.floor((Math.random() * 2 - 1) * 14);
-    h1_point.y = canvas.height * 0.2 + Math.floor((Math.random() * 2 - 1) * 14);
-    h1_point.alpha = 0.5;
+    h1_point.graphics.beginFill("rgb(222, 255, 92)").drawCircle(0, 0, 10);
+    h1_point.alpha = 0.0;
 
     var h2_point = new createjs.Shape();
-    h2_point.graphics.beginFill("rgb(222, 255, 92)").drawCircle(0, 0, 6);
-    h2_point_x = canvas.width * 0.5 + Math.floor((Math.random() * 2 - 1) * canvas.width * 0.05);
-    h2_point.x = h2_point_x;
-    h2_point.y = canvas.height * 0.6 + Math.floor((Math.random() * 2 - 1) * canvas.height * 0.2);
-    h2_point.alpha = 0.5;
+    h2_point.graphics.beginFill("rgb(222, 255, 92)").drawCircle(0, 0, 10);
+    h2_point.alpha = 0.0;
 
     var h3_point = new createjs.Shape();
-    h3_point.graphics.beginFill("rgb(222, 255, 92)").drawCircle(0, 0, 6);
-    h3_point_x = canvas.width * 0.5 + Math.floor((Math.random() * 2 - 1) * canvas.width * 0.05);
-    h3_point.x = h3_point_x;
-    h3_point.y = canvas.height * 0.6 + Math.floor((Math.random() * 2 - 1) * canvas.height * 0.2);
-    h3_point.alpha = 0.5;
+    h3_point.graphics.beginFill("rgb(0, 255, 92)").drawCircle(0, 0, 10);
+    h3_point.alpha = 0.0;
 
     // alpha
     var purple_graphics = new createjs.Graphics();
@@ -226,7 +310,7 @@
         .beginRadialGradientFill(["#ff00ff", "#000000"], [0, 0.5], canvas.width * 0.5, canvas.height * 0.5, 0, canvas.width * 0.5, canvas.height * 0.5, 640)
         .drawRect(0, 0, canvas.width, canvas.height);
     purple_circle = new createjs.Shape(purple_graphics);
-    //purple_circle.alpha = 0.0;
+    purple_circle.alpha = 0.0;
 
     var red_graphics = new createjs.Graphics();
     red_graphics
@@ -243,77 +327,119 @@
     white_circle.alpha = 0.0;
 
     // 下の画像の先読み処理
-    var baseimg = new Image();
-    baseimg.src = "bg2.png";
-    // 画像の読み込み完了後に Bitmap のインスタンスを作成する
-    baseimg.onload = function () {
-        basemap = new createjs.Bitmap("bg2.png");
-        basemap.scaleX = 1.0 // x方向の拡大率変更
-        basemap.scaleY = 1.0 // y方向の拡大率変更
-        //stage.addChild(basemap);
-    };
-
-    // 上の画像の先読み処理
     var img = new Image();
     img.src = "fr2.png";
+    // 画像の読み込み完了後に Bitmap のインスタンスを作成する
+    img.onload = function () {
+        bitmap = new createjs.Bitmap("fr2.png");
+        bitmap.scaleX = 1.0 // x方向の拡大率変更
+        bitmap.scaleY = 1.0 // y方向の拡大率変更
+        bitmap.alpha = 0.0;
+    };
+
+    var figmap_graphics = new createjs.Graphics();
+    figmap_graphics
+        .beginRadialGradientFill(['rgba(255, 0, 0, 1)', 'rgba(255, 0, 0, 0)'], [0, 0.5], 50, 50, 0, 50, 50, 100)
+        .drawRect(0, 0, canvas.width, canvas.height);
+    figmap = new createjs.Shape(figmap_graphics);
+    figmap.alpha = 0.0;
+
+
+
 
     /* -----------------------------------------------------------------
     createjsのモデルを配置　画像の読み込み完了後に Bitmap のインスタンスを作成する
     -------------------------------------------------------------------- */
-    //var bitmap = new Image();
-    img.onload = function () {
-        bitmap = new createjs.Bitmap("fr2.png");
-        //bitmap.y = 100;
-        bitmap.scaleX = 1.0 // x方向の拡大率変更
-        bitmap.scaleY = 1.0 // y方向の拡大率変更
-        stage.addChild(purple_circle, red_circle, white_circle, basemap, circle, bitmap, value_text, stopW_text, h1_point, h2_point, h3_point);
+    // 上の画像の先読み処理
+    var baseimg = new Image();
+    baseimg.src = "bg2.png";
+    baseimg.onload = function () {
+        basemap = new createjs.Bitmap(baseimg);
+        //basemap.y = 100;
+        basemap.scaleX = 1.0 // x方向の拡大率変更
+        basemap.scaleY = 1.0 // y方向の拡大率変更
+        basemap.alpha = 0.0;
+        stage.addChild(purple_circle, red_circle, basemap, circle, bitmap, h1_point, h2_point, h3_point, white_circle, figmap);
         stage.update();
+
+        createjs.Tween.get(circle) // ターゲットを指定
+            .to({ alpha: 1 }, 2000);
+        createjs.Tween.get(bitmap) // ターゲットを指定
+            .to({ alpha: 1 }, 4000);
+        createjs.Tween.get(basemap) // ターゲットを指定
+            .to({ alpha: 1 }, 8000);
+
         stretch();
+
+        // 画像の読み込みと、音の読み込み総数カウントと総数が一緒になったらStart
+        if (51 + 38 + 35 == voice_list1.length + voice_list2.length) {
+            loaded();
+        }
     };
 
     /* -----------------------------------------------------------------
         //ストップウォッチ
         -------------------------------------------------------------------- */
-    var stopwatch_time = 20;
+    var stopwatch_time;
 
     function stopWatch() {
-        myStop = new Date();	// 経過時間を退避
-        myTime = myStop.getTime() - myStart.getTime();	// 通算ミリ秒計算
-        myS = Math.floor(myTime / 1000);	// '秒'取得
-        stopW_text.text = stopwatch_time - myS;
+        //o_valueが1.0を越えたらゴール
+        if (o_value > 1.0) {
+            playing = false;
+
+            var voice_goal = new Audio();
+            voice_goal.src = './aegi_d/d-0.mp3'; // 音声ファイルの指定
+            voice_goal.load(); // audioの読み込み
+            voice_goal.play();
+
+            modal.classList.remove('hidden');
+            mask.classList.remove('hidden');
+            document.getElementById("close").innerHTML = "RESTART!!!"
+            if (language == "ja") {
+                document.getElementById("message").innerHTML = "<br><h2 align='center'>Congrats!</h2>イかせました！<br>あなたはテクニシャンです！"
+            }
+            else {
+                document.getElementById("message").innerHTML = "<br><h2 align='center'>Congrats!</h2>GET ORGAZM!<br>You are a technician!"
+            }
+            document.getElementById('modal').style.backgroundImage = 'url("./girl_png/girl004.png")';
+
+        } else {
+            myStop = new Date();	// 経過時間を退避
+            myTime = myStop.getTime() - myStart.getTime();	// 通算ミリ秒計算
+            myS = Math.floor(myTime / 1000);	// '秒'取得
+        }
+
         if (stopwatch_time - myS == 0) {
-            clearInterval(myInterval);
-            clearInterval(o_Interval);
+            playing = false;
             modal.classList.remove('hidden');
             mask.classList.remove('hidden');
             document.getElementById("close").innerHTML = "RESTART!!!"
             if (Dist1 > 5) {
-                document.getElementById("message").innerHTML = "YOU FAILED<br>激しく動かしすぎです"
+                document.getElementById('modal').style.backgroundImage = 'url("./girl_png/girl002.png")';
+                if (language == "ja") {
+                    document.getElementById("message").innerHTML = "<br><h2 align='center'>YOU FAILED</h2>You are moving too hard. Find a place where you can feel it while moving your finger slowly, and blame it carefully.";
+                }
+                else {
+                    document.getElementById("message").innerHTML = "<br><h2 align='center'>YOU FAILED</h2>激しく動かしすぎです。ゆっくり指を動かしながら感じる場所を探し出し、じっくり責めましょう！";
+                }
             }
             else {
-                document.getElementById("message").innerHTML = "YOU FAILED<br>責めが足りません"
+                document.getElementById('modal').style.backgroundImage = 'url("./girl_png/girl003.png")';
+                if (language == "ja") {
+                    document.getElementById("message").innerHTML = "<br><h2 align='center'>YOU FAILED</h2>Not enough blame.There is more than one place to feel.Let's blame while moving your finger to various points";
+                }
+                else {
+                    document.getElementById("message").innerHTML = "<br><h2 align='center'>YOU FAILED</h2>責めが足りません。感じる場所は一つではありません。色々なポイントに指を動かしながら責めましょう！";
+                }
             }
-            Dist0 = 0;
-            Dist1 = 0;
         }
 
-        if (o_value > 1.0) {
-            clearInterval(myInterval);
-            clearInterval(o_Interval);
-            modal.classList.remove('hidden');
-            mask.classList.remove('hidden');
-            document.getElementById("close").innerHTML = "RESTART!!!"
-            document.getElementById("message").innerHTML = "GET ORGAZM<br>イかせました！"
-            Dist0 = 0;
-            Dist1 = 0;
-        }
 
     }
 
     /* -----------------------------------------------------------------    
     //徐々に元の大きさに小さくなる　＆　色の変化
     -------------------------------------------------------------------- */
-    var voice1_volume;
 
     function stretch() {
         createjs.Ticker.framerate = 40
@@ -327,10 +453,28 @@
             bitmap.x = canvas.width * 0.5;
             bitmap.y = canvas.height * 0.5;
 
+            // ストレッチを戻す
             if (circle.scaleX > 1) {
                 circle.scaleX = circle.scaleX - (circle.scaleX - 1) * 0.02;
+                circle.scaleY = circle.scaleY - (circle.scaleY - 1) * 0.02;
+            }
+            if (h1_point.scaleX > 1) {
+                h1_point.scaleX = h1_point.scaleX - (h1_point.scaleX - 1) * 0.02;
+                h1_point.scaleY = h1_point.scaleY - (h1_point.scaleY - 1) * 0.02;
+                //h1_point.alpha = h1_point.scaleY - 1;
+            }
+            if (h2_point.scaleX > 1) {
+                h2_point.scaleX = h2_point.scaleX - (h2_point.scaleX - 1) * 0.02;
+                h2_point.scaleY = h2_point.scaleY - (h2_point.scaleY - 1) * 0.02;
+                //h2_point.alpha = h2_point.scaleY - 1;
+            }
+            if (h3_point.scaleX > 1) {
+                h3_point.scaleX = h3_point.scaleX - (h3_point.scaleX - 1) * 0.02;
+                h3_point.scaleY = h3_point.scaleY - (h3_point.scaleY - 1) * 0.02;
+                //h3_point.alpha = h3_point.scaleY - 1;
             }
 
+            // ストレッチと共に移動
             if (h2_point_x < canvas.width * 0.5) {
                 h2_point.x = canvas.width - (canvas.width - h2_point_x) * (1 + (bitmap.scaleX - 0.3) * 0.5);
             } else {
@@ -338,7 +482,7 @@
             }
 
             if (h3_point_x < canvas.width * 0.5) {
-                h3_point.x = canvas.width + (canvas.width - h3_point_x) * (1 + (bitmap.scaleX - 0.3) * 0.5);
+                h3_point.x = canvas.width - (canvas.width - h3_point_x) * (1 + (bitmap.scaleX - 0.3) * 0.5);
             } else {
                 h3_point.x = h3_point_x * (1 + (bitmap.scaleX - 0.3) * 0.5);
             }
@@ -353,56 +497,131 @@
             //console.log(Dist1);
             purple_circle.alpha = (Dist0 - 10) * 0.02;
             red_circle.alpha = (Dist0 - 40) * 0.02;
-            white_circle.alpha = (Dist0 - 70) * 0.02;
+            var white_val = (Dist0 - 70) * 0.02;
+            if (white_val > 0.9) {
+                white_val = 0.9;
+            }
+            white_circle.alpha = white_val;
 
 
+            //// Particle Update
+            if (o_value > 0.7) {
+                emitParticles();
+                // パーティクルを更新
+            }
+            updateParticles();
+
+            // 画面を更新する
             stage.update();
-
-            /* -----------------------------------------------------------------
-            Voice のきりかえ
-            -------------------------------------------------------------------- */
-            // document.getElementById("result").innerHTML = bitmap.scaleX;
-            // document.getElementById("result").style.color = "red";
-
-            // voice1.volume = (Math.min(Math.max(0, bitmap.scaleX), 0.5) - 0.3)*0.5;
-            // voice2.volume = (Math.min(Math.max(0.5, bitmap.scaleX), 0.8) - 0.5)*0.33;
-            // voice3.volume = (Math.min(Math.max(0.8, bitmap.scaleX), 1.0) - 0.7)*0.5;
 
             return;
         })
 
     }
 
+    /* -----------------------------------------------------------------
+    パーティクルメソッド
+    -------------------------------------------------------------------- */
+    var count = 0; // tick イベントの回数
+    var MAX_LIFE = 20; // 寿命の最大値
+    var particles = [];
+
+    // パーティクルを発生させます
+    function emitParticles() {
+        // パーティクルの生成
+        for (var i = 0; i < 2; i++) {
+
+            // カウントの更新
+            count += 1;
+            // オブジェクトの作成
+            var particle = new createjs.Shape();
+            particle.graphics
+                .beginFill(createjs.Graphics.getHSL(count, 50, 50))
+                .drawCircle(0, 0, 30 * Math.random());
+            stage.addChild(particle);
+            particle.compositeOperation = "lighter";
+
+            // パーティクルの発生場所
+            particle.x = stage.canvas.width / 2;
+            particle.y = stage.canvas.height * 1 / 3;
+            particle.alpha = 0.5;
+
+            // 動的にプロパティーを追加します。
+            // 速度
+            particle.vx = 30 * (Math.random() - 0.5);
+            particle.vy = 30 * (Math.random() - 0.5);
+            // 寿命
+            particle.life = MAX_LIFE;
+
+            particles.push(particle);
+        }
+    }
+
+    // パーティクルを更新します
+    function updateParticles() {
+        // パーティクルの計算を行う
+        for (var i = 0; i < particles.length; i++) {
+            // オブジェクトの作成
+            var particle = particles[i];
+
+            // 重力
+            particle.vy += 1;
+
+            // 摩擦
+            particle.vx *= 0.96;
+            particle.vy *= 0.96;
+
+            // 速度を位置に適用
+            particle.x += particle.vx;
+            particle.y += particle.vy;
+
+            // 地面
+            if (particle.y > stage.canvas.height) {
+                particle.y = stage.canvas.height; // 行き過ぎ補正
+                particle.vy *= -1; // Y軸の速度を反転
+            }
+
+            // パーティクルのサイズをライフ依存にする
+            var scale = particle.life / MAX_LIFE;
+            particle.scaleX = particle.scaleY = scale;
+
+            // 寿命を減らす
+            particle.life -= 1;
+
+            // 寿命の判定
+            if (particle.life <= 0) {
+                // ステージから削除
+                stage.removeChild(particle);
+
+                // 配列からも削除
+                particles.splice(i, 1);
+            }
+        }
+    }
+
 
     /* -----------------------------------------------------------------
-    MouseEvent
+    MouseEvent クリトリスメソッド
     -------------------------------------------------------------------- */
-    //var music = new Audio('./voice/neiki_01-01.mp3');
 
-    var dragging = false;
-    circle.addEventListener("mousedown", handleDown);
-    circle.addEventListener("pressmove", handleMove);
-    circle.addEventListener("pressup", handleUp);
+    // circle.addEventListener("mousedown", handleDown);
+    // circle.addEventListener("pressmove", handleMove);
+    // circle.addEventListener("pressup", handleUp);
 
-    function handleDown(event) {
-        console.log('on')
-        circle.scaleX += 0.03;
-        bitmap.scaleX += 0.005;
-        //dragging = true;
-    }
+    // function handleDown(event) {
+    //     console.log('on')
+    //     circle.scaleX += 0.03;
+    //     // bitmap.scaleX += 0.005;
+    // }
 
-    function handleMove(event) {
-        console.log('Drag')
-        circle.scaleX += 0.03;
-        bitmap.scaleX += 0.005;
-        //dragging = true;
-        Dist0 = Dist0 + 0.25;
-    }
+    // function handleMove(event) {
+    //     circle.scaleX += 0.03;
+    //     // bitmap.scaleX += 0.005;
+    // }
 
-    function handleUp(event) {
-        console.log('Up');
-        //dragging = false
-    }
+    // function handleUp(event) {
+    //     console.log('Up');
+    // }
 
     /* -----------------------------------------------------------------
     Stretch
@@ -440,15 +659,12 @@
     //Drag中に大きくする
     function drag() {
         if (bitmap.scaleX < 1.1) {
-            bitmap.scaleX = bitmap.scaleX + bitmap.scaleX * 0.0105;
+            bitmap.scaleX = bitmap.scaleX + 0.002 + (Dist0 - 10) * 0.0001;
         }
-        bitmap.regX = bitmap.image.width / 2;
-        bitmap.regY = bitmap.image.height / 2;
-        bitmap.x = canvas.width * 0.5;
-        bitmap.y = canvas.height * 0.5;
 
-        if (circle.scaleX < 1.1) {
-            circle.scaleX = circle.scaleX + circle.scaleX * 0.02;
+        if (circle.scaleX < 1.5) {
+            circle.scaleX = circle.scaleX + circle.scaleX * 0.01;
+            circle.scaleY = circle.scaleY + circle.scaleY * 0.01;
         }
     }
 
@@ -456,68 +672,37 @@
     Audio 読み込み
     -------------------------------------------------------------------- */
 
-    // var voice1 = new Audio(); // audioの作成
-    // voice1.src = './voice/neiki_01.mp3'; // 音声ファイルの指定
-    // voice1.load(); // audioの読み込み
-
-    // var voice2 = new Audio(); // audioの作成
-    // voice2.src = './voice/kakokyu_01.mp3'; // 音声ファイルの指定
-    // voice2.load(); // audioの読み込み
-
-    // var voice3 = new Audio(); // audioの作成
-    // voice3.src = './voice/kakokyu_03.mp3'; // 音声ファイルの指定
-    // voice3.load(); // audioの読み込み
-
-    // function voice(){
-    //     voice1.play();  // 再生
-    //     voice1.addEventListener("ended", function () {
-    //         voice1.currentTime = 0;
-    //         setTimeout(function(){
-    //         voice1.play();
-    //         },1000);
-    //     })
-
-    //     voice2.play();  // 再生
-    //     voice2.addEventListener("ended", function () {
-    //         voice2.currentTime = 0;
-    //         setTimeout(function(){
-    //         voice2.play();
-    //         },1000);
-    //     })
-
-    //     voice2.play();  // 再生
-    //     voice2.addEventListener("ended", function () {
-    //         voice2.currentTime = 0;
-    //         setTimeout(function(){
-    //         voice2.play();
-    //         },1000);
-    //     })
-    // }
-
-
-    var audio = document.createElement('audio');
-    document.body.appendChild(audio);
-    var playlist = [
-        './voice/neiki_01-01.mp3',
-        './voice/neiki_01-02.mp3',
-        './voice/neiki_01-03.mp3',
-        './voice/neiki_01-04.mp3',
-        './voice/neiki_01-05.mp3',
-        './voice/neiki_01-06.mp3',
-        './voice/neiki_01-07.mp3',
-        './voice/neiki_01-08.mp3',
-        './voice/neiki_01-09.mp3',
-        './voice/neiki_01-10.mp3',
-        './voice/neiki_01-11.mp3',
-        './voice/neiki_01-12.mp3'
-    ]
-    var voice_list = [];
-    for (var value of playlist) {
-        var voice = new Audio();
-        voice.src = value; // 音声ファイルの指定
-        voice.load(); // audioの読み込み
-        voice_list.push(voice);
+    var voice_list1 = [];
+    for (i = 0; i < 51; i++) {
+        var voice1 = new Audio();
+        voice1.src = './aegi_a/a-' + i + '.mp3'; // 音声ファイルの指定
+        voice1.load(); // audioの読み込み
+        voice_list1.push(voice1);
     }
+
+    // voice_list2に集約する
+    var voice_list2 = [];
+    for (i = 0; i < 38; i++) {
+        var voice2 = new Audio();
+        voice2.src = './aegi_b/b-' + i + '.mp3'; // 音声ファイルの指定
+        voice2.load(); // audioの読み込み
+        voice_list2.push(voice2);
+    }
+
+    for (i = 0; i < 35; i++) {
+        var voice3 = new Audio();
+        voice3.src = './aegi_c/c-' + i + '.mp3'; // 音声ファイルの指定
+        voice3.load(); // audioの読み込み
+        voice_list2.push(voice3);
+    }
+
+    // ロード完了時に呼び出し
+    function loaded() {
+        click_func();
+        loop();
+        document.getElementById("close").innerHTML = "START!!!"
+    }
+
 
     /* -----------------------------------------------------------------
     Update 値を監視して、常にストレッチを更新する 
@@ -529,8 +714,11 @@
     var Dist0 = 0;
     var Dist1 = 0;
     var dragging;
-    var previous_num;
+    var previous_num1;
+    var previous_num2;
 
+    var sesivity = 0.1;
+    var voice_thread = 40;
     var _start = new Date();	// 経過時間を退避
 
 
@@ -539,6 +727,7 @@
         //document.getElementById("canvas1").onmousedown = function (event) {
         document.getElementById("canvas1").ontouchstart = function (event) {
             //console.log('Down');
+
             if (event.changedTouches) {
                 x0 = event.changedTouches[0].pageX;
                 y0 = event.changedTouches[0].pageY;
@@ -549,14 +738,28 @@
             }
             dragging = true;
 
-            previous_num = Math.floor(Math.random() * voice_list.length);
-            voice_list[previous_num].currentTime = 0;
-            voice_list[previous_num].play();
+            figmap.x = x0 - canvas.width * 0.25 - 62;
+            figmap.y = y0 - canvas.height * 0.25 - 13;
+
+            previous_num1 = Math.floor(Math.random() * voice_list1.length);
+            voice_list1[previous_num1].currentTime = 0;
+            voice_list1[previous_num1].volume = 0.4;
+            voice_list1[previous_num1].play();
+            // previous_num1 = Math.floor(Math.random() * voice_list1.length);
+            // voice_list1[previous_num1].currentTime = voice_list1[previous_num1].duration;
+
+            if (Dist0 < voice_thread) {
+                previous_num2 = Math.floor(Math.random() * 38);
+                voice_list2[previous_num2].volume = 0.8;
+            } else {
+                previous_num2 = Math.floor(38 + Math.random() * 35);
+                voice_list2[previous_num2].volume = 1.0;
+            }
+            voice_list2[previous_num2].currentTime = voice_list2[previous_num2].duration;
         }
         //Drag Over
         //document.getElementById("canvas1").onmousemove = function (event) {
         document.getElementById("canvas1").ontouchmove = function (event) {
-            //console.log('Drag');
 
             //こちらは携帯用のメソッド
             if (event.changedTouches) {
@@ -567,29 +770,112 @@
 
                 ///////// 感度のメソッド //////////
                 var point = Math.abs(xDist) + Math.abs(yDist)
-                if (point < 8) {
-                    Dist0 = Dist0 + 0.25;
+                var x_margin = document.getElementById("canvas1").getBoundingClientRect().left;
+                var y_margin = document.getElementById("canvas1").getBoundingClientRect().top;
+
+                var h1_Dist = Math.sqrt(Math.pow((x0 - x_margin) - h1_point.x, 2) + Math.pow((y0 - y_margin) - h1_point.y, 2));
+                var h2_Dist = Math.sqrt(Math.pow((x0 - x_margin) - h2_point.x, 2) + Math.pow((y0 - y_margin) - h2_point.y, 2));
+                var h3_Dist = Math.sqrt(Math.pow((x0 - x_margin) - h3_point.x, 2) + Math.pow((y0 - y_margin) - h3_point.y, 2));
+
+                if (figmap.alpha < 1) {
+                    figmap.alpha = figmap.alpha + 0.1;
                 }
-                else {
-                    Dist0 = Dist0 - 0.6;
-                    Dist1 = Dist1 + 0.1;
+                figmap.x = x0 - canvas.width * 0.25 - 62;
+                figmap.y = y0 - canvas.height * 0.25 - 13;
+
+                if (point < 8) {
+                    drag();
+                    Dist0 = Dist0 + 0.3;
+                    if (h1_Dist < 10) {
+                        Dist0 = Dist0 + sesivity;
+                        drag();
+                        if (voice_list2[previous_num2].ended) {
+                            if (Dist0 < voice_thread) {
+                                previous_num2 = Math.floor(Math.random() * 38);
+                                voice_list2[previous_num2].volume = 0.8;
+                            } else {
+                                previous_num2 = Math.floor(38 + Math.random() * 35);
+                                voice_list2[previous_num2].volume = 1.0;
+                            }
+                            voice_list2[previous_num2].currentTime = 0;
+                            voice_list2[previous_num2].play();
+                        }
+                        if (h1_point.scaleX < 4.0) {
+                            h1_point.scaleX += 0.05;
+                            h1_point.scaleY += 0.05;
+                        }
+                    }
+
+                    if (h2_Dist < 10) {
+                        Dist0 = Dist0 + sesivity;
+                        drag();
+                        if (voice_list2[previous_num2].ended) {
+                            if (Dist0 < voice_thread) {
+                                previous_num2 = Math.floor(Math.random() * 38);
+                                voice_list2[previous_num2].volume = 0.8;
+                            } else {
+                                previous_num2 = Math.floor(38 + Math.random() * 35);
+                                voice_list2[previous_num2].volume = 1.0;
+                            }
+                            voice_list2[previous_num2].currentTime = 0;
+                            voice_list2[previous_num2].play();
+                        }
+                        if (h2_point.scaleX < 4.0) {
+                            h2_point.scaleX += 0.05;
+                            h2_point.scaleY += 0.05;
+                        }
+                    }
+
+                    if (h3_Dist < 10) {
+                        Dist0 = Dist0 + sesivity;
+
+                        if (voice_list2[previous_num2].ended) {
+                            if (Dist0 < voice_thread) {
+                                previous_num2 = Math.floor(Math.random() * 38);
+                                voice_list2[previous_num2].volume = 0.8;
+                            } else {
+                                previous_num2 = Math.floor(38 + Math.random() * 35);
+                                voice_list2[previous_num2].volume = 1.0;
+                            }
+                            voice_list2[previous_num2].currentTime = 0;
+                            voice_list2[previous_num2].play();
+                        }
+
+                        if (h3_point.scaleX < 2.0) {
+                            h3_point.scaleX += 0.05;
+                            h3_point.scaleY += 0.05;
+                        }
+                    }
+
+                    ////// Voice2 Check
+                    if (!voice_list2[previous_num2].ended) {
+                        //Voice1 Fadeout
+                        function fadeout() {
+                            var vl = voice_list1[previous_num1].volume;
+                            if (vl > 0) {
+                                voice_list1[previous_num1].volume = Math.floor((vl - 0.1) * 10) / 10;
+                                setTimeout("fadeout()", 10);
+                            }
+                        }
+                    }
                 }
 
-                //arr.push({ "t": Date.now() - startTime, "x": x0, "y": y0 });
-                //_arr.push({ "t": Date.now() - startTime, "x": xDist, "y": yDist, "z": Dist0 });
                 drag();
                 stage.update();
 
                 ///// Sound Play
-                if (voice_list[previous_num].ended) {
-                    previous_num = Math.floor(Math.random() * voice_list.length);
-                    voice_list[previous_num].currentTime = 0;
-                    setTimeout(function () {
-                        voice_list[previous_num].play();
-                    }, 400);
-                    //voice_list[previous_num].play();
+                if (voice_list2[previous_num2].ended) {
+                    if (voice_list1[previous_num1].ended) {
+                        if (Dist0 < voice_thread) {
+                            previous_num2 = Math.floor(Math.random() * 38);
+                        } else {
+                            previous_num2 = Math.floor(38 + Math.random() * 35);
+                        }
+                        voice_list1[previous_num1].currentTime = 0;
+                        voice_list1[previous_num1].volume = 0.4;
+                        voice_list1[previous_num1].play()
+                    }
                 }
-                console.log('携帯');
             }
             //こちらはPC用のメソッド
             else {
@@ -602,30 +888,111 @@
 
                     ///////// 感度のメソッド //////////
                     var point = Math.abs(xDist) + Math.abs(yDist)
+                    var x_margin = document.getElementById("canvas1").getBoundingClientRect().left;
+                    var y_margin = document.getElementById("canvas1").getBoundingClientRect().top;
+
+                    var h1_Dist = Math.sqrt(Math.pow((x0 - x_margin) - h1_point.x, 2) + Math.pow((y0 - y_margin) - h1_point.y, 2));
+                    var h2_Dist = Math.sqrt(Math.pow((x0 - x_margin) - h2_point.x, 2) + Math.pow((y0 - y_margin) - h2_point.y, 2));
+                    var h3_Dist = Math.sqrt(Math.pow((x0 - x_margin) - h3_point.x, 2) + Math.pow((y0 - y_margin) - h3_point.y, 2));
+
+                    if (figmap.alpha < 1) {
+                        figmap.alpha = figmap.alpha + 0.1;
+                    }
+                    figmap.x = x0 - canvas.width * 0.25 - 62;
+                    figmap.y = y0 - canvas.height * 0.25 - 13;
+
+                    stage.update();
+
                     if (point < 8) {
-                        Dist0 = Dist0 + 0.25;
+                        drag();
+                        Dist0 = Dist0 + 0.3;
+                        if (h1_Dist < 10) {
+                            Dist0 = Dist0 + sesivity;
+                            drag();
+                            if (voice_list2[previous_num2].ended) {
+                                if (Dist0 < voice_thread) {
+                                    previous_num2 = Math.floor(Math.random() * 38);
+                                    voice_list2[previous_num2].volume = 0.8;
+                                } else {
+                                    previous_num2 = Math.floor(38 + Math.random() * 35);
+                                    voice_list2[previous_num2].volume = 1.0;
+                                }
+                                voice_list2[previous_num2].currentTime = 0;
+                                voice_list2[previous_num2].play();
+                            }
+                            if (h1_point.scaleX < 4.0) {
+                                h1_point.scaleX += 0.05;
+                                h1_point.scaleY += 0.05;
+                            }
+                        }
+
+                        if (h2_Dist < 10) {
+                            Dist0 = Dist0 + sesivity;
+                            drag();
+                            if (voice_list2[previous_num2].ended) {
+                                if (Dist0 < voice_thread) {
+                                    previous_num2 = Math.floor(Math.random() * 38);
+                                    voice_list2[previous_num2].volume = 0.8;
+                                } else {
+                                    previous_num2 = Math.floor(38 + Math.random() * 35);
+                                    voice_list2[previous_num2].volume = 1.0;
+                                }
+                                voice_list2[previous_num2].currentTime = 0;
+                                voice_list2[previous_num2].play();
+                            }
+                            if (h2_point.scaleX < 4.0) {
+                                h2_point.scaleX += 0.05;
+                                h2_point.scaleY += 0.05;
+                            }
+                        }
+
+                        if (h3_Dist < 10) {
+                            Dist0 = Dist0 + sesivity;
+                            drag();
+                            if (voice_list2[previous_num2].ended) {
+                                if (Dist0 < voice_thread) {
+                                    previous_num2 = Math.floor(Math.random() * 38);
+                                    voice_list2[previous_num2].volume = 0.8;
+                                } else {
+                                    previous_num2 = Math.floor(38 + Math.random() * 35);
+                                    voice_list2[previous_num2].volume = 1.0;
+                                }
+                                voice_list2[previous_num2].currentTime = 0;
+                                voice_list2[previous_num2].play();
+                            }
+
+                            if (h3_point.scaleX < 2.0) {
+                                h3_point.scaleX += 0.05;
+                                h3_point.scaleY += 0.05;
+                            }
+                        }
+
+                        ////// Voice2 Check
+                        if (!voice_list2[previous_num2].ended) {
+                            //Voice1 Fadeout
+                            function fadeout() {
+                                var vl = voice_list1[previous_num1].volume;
+                                if (vl > 0) {
+                                    voice_list1[previous_num1].volume = Math.floor((vl - 0.1) * 10) / 10;
+                                    setTimeout("fadeout()", 10);
+                                }
+                            }
+                        }
                     }
-                    else {
-                        Dist0 = Dist0 - 0.6;
-                        Dist1 = Dist1 + 0.1;
-                    }
-                    value_text.text = 'W';
-                    //arr.push({ "t": Date.now() - startTime, "x": x0, "y": y0 });
-                    //_arr.push({ "t": Date.now() - startTime, "x": xDist, "y": yDist, "z": Dist0 });
 
                     //Drag中に大きくする
-                    drag();
+                    //drag();
                     stage.update();
 
                     ///// Sound Play
-                    if (voice_list[previous_num].ended) {
-                        previous_num = Math.floor(Math.random() * voice_list.length);
-                        voice_list[previous_num].currentTime = 0;
-                        setTimeout(function () {
-                            voice_list[previous_num].play();
-                        }, 400);
+                    if (voice_list2[previous_num2].ended) {
+                        if (voice_list1[previous_num1].ended) {
+                            previous_num1 = Math.floor(Math.random() * voice_list1.length);
+                            voice_list1[previous_num1].currentTime = 0;
+                            voice_list1[previous_num1].volume = 0.4;
+                            voice_list1[previous_num1].play()
+                        }
                     }
-
                 }
             }
 
@@ -647,7 +1014,7 @@
         //Mouse UP
         //document.getElementById("canvas1").onmouseup = function (event) {
         document.getElementById("canvas1").touchend = function (event) {
-            console.log('Up');
+            figmap.alpha = 0.0;
             xDist = 0;
             yDist = 0;
             dragging = false;
@@ -658,9 +1025,13 @@
     }
 
     function o_Watch() {
+        if (figmap.alpha > 0) {
+            figmap.alpha = figmap.alpha - 0.02;
+        }
+
         ///////// 感度の減少メソッド //////////
         if (Dist0 > 0) {
-            Dist0 = Dist0 - 0.4;
+            Dist0 = Dist0 - 0.2;
         } else {
             Dist0 = 0;
         }
@@ -677,15 +1048,15 @@
     var o_value = 0;
 
     function displayData() {
-        if (!canvas || !canvas.getContext) { return false; }
+        if (!_canvas || !_canvas.getContext) { return false; }
         _ctx.fillStyle = "rgb(0, 0, 0)";
-        _ctx.fillRect(0, 0, canvas.clientWidth, canvas.clientHeight);
+        _ctx.fillRect(0, 0, _canvas.clientWidth, _canvas.clientHeight);
         _ctx.lineWidth = 1;
 
         // 最新から 300px 分のデータを取りだす。
         var varr = [];
-        if (arr.length > canvas.clientWidth) {
-            varr = arr.slice(-canvas.clientWidth, -1);
+        if (arr.length > _canvas.clientWidth) {
+            varr = arr.slice(-_canvas.clientWidth, -1);
         } else {
             varr = arr;
         }
@@ -713,20 +1084,22 @@
 
         // 加速度
         var _varr = [];
-        if (_arr.length > canvas.clientWidth) {
-            _varr = _arr.slice(-canvas.clientWidth, -1);
+        if (_arr.length > _canvas.clientWidth) {
+            _varr = _arr.slice(-_canvas.clientWidth, -1);
         } else {
             _varr = _arr;
         }
 
         for (idx in _varr) {
             if (idx > _canvas.clientWidth) break;
+
             var dat = _varr[idx];
 
             // X 軸加速度を赤の線で表示する
             var dx = idx;
             var dy1 = _canvas.clientHeight / 2 + dat.x * 5.0;
             _ctx.strokeStyle = "green";
+            _ctx.lineWidth = 2;
             _ctx.beginPath();
             _ctx.moveTo(dx, dy1);
             _ctx.lineTo(dx - 1, _preX);
@@ -735,6 +1108,7 @@
             // Y 軸加速度を青の線で表示する
             var dy2 = _canvas.clientHeight / 2 + dat.y * 5.0;
             _ctx.strokeStyle = "blue";
+            _ctx.lineWidth = 2;
             _ctx.beginPath();
             _ctx.moveTo(dx, dy2);
             _ctx.lineTo(dx - 1, _preY);
@@ -744,37 +1118,55 @@
             var dy3 = _canvas.clientHeight - dat.z;
 
             /////Check Limit
-            // if (dy3 > _canvas.clientHeight) {
-            //     dy3 = _canvas.clientHeight;
-            // }
-            // else if (dy3 < 0) {
-            //     dy3 = 0;
-            // }
             _ctx.strokeStyle = "red";
+            _ctx.lineWidth = 4;
             _ctx.beginPath();
             _ctx.moveTo(dx, dy3);
-            _ctx.lineTo(dx - 1, _preZ);
+            if (dx == 0) {
+                _ctx.lineTo(dx - 1, _canvas.clientHeight);
+            } else {
+                _ctx.lineTo(dx - 1, _preZ);
+            }
+
             _ctx.stroke();
 
             // 次のデータを表示するときに前のデータから線を描く用
             _preX = dy1;
             _preY = dy2;
             _preZ = dy3;
-            // o_value = 1.0 - (dy3 / _canvas.clientHeight);
-            // value_text.text = o_value;
-            //console.log(dy3);
+
+            o_value = 1.0 - (dy3 / _canvas.clientHeight);
+
+            //Time Text
+            if (stopwatch_time - myS > 10) {
+                _ctx.fillStyle = 'rgba(0, 255, 0)';
+            } else if (stopwatch_time - myS > 5) {
+                _ctx.fillStyle = 'rgba(0, 255, 255)';
+            } else {
+                _ctx.fillStyle = 'rgba(255, 0, 0)';
+            }
+            _ctx.font = '10px Arial';
+            _ctx.fillText('Count Down', _canvas.clientWidth - 120, 30);  // 座標 (20, 50) にテキスト描画
+            _ctx.font = '20px Arial';
+            _ctx.fillText(stopwatch_time - myS, _canvas.clientWidth - 40, 30);  // 座標 (20, 50) にテキスト描画
         }
 
 
     }
 
     // ブラウザのレンダリングのタイミングにあわせて表示を更新
-    (function loop() {
-        displayData();
-
+    function loop() {
+        if (playing) {
+            stopWatch();
+            o_Watch();
+            displayData();
+        };
         // update();
         window.requestAnimationFrame(loop);
-    }());
+    };
+
+
+
 
     /* -----------------------------------------------------------------
     ピッチインピッチアウトによる拡大縮小を禁止
