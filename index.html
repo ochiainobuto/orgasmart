@@ -326,17 +326,6 @@
     white_circle = new createjs.Shape(white_graphics);
     white_circle.alpha = 0.0;
 
-    // 下の画像の先読み処理
-    var img = new Image();
-    img.src = "fr2.png";
-    // 画像の読み込み完了後に Bitmap のインスタンスを作成する
-    img.onload = function () {
-        bitmap = new createjs.Bitmap("fr2.png");
-        bitmap.scaleX = 1.0 // x方向の拡大率変更
-        bitmap.scaleY = 1.0 // y方向の拡大率変更
-        bitmap.alpha = 0.0;
-    };
-
     var figmap_graphics = new createjs.Graphics();
     figmap_graphics
         .beginRadialGradientFill(['rgba(255, 0, 0, 1)', 'rgba(255, 0, 0, 0)'], [0, 0.5], 50, 50, 0, 50, 50, 100)
@@ -344,16 +333,33 @@
     figmap = new createjs.Shape(figmap_graphics);
     figmap.alpha = 0.0;
 
-
-
-
     /* -----------------------------------------------------------------
     createjsのモデルを配置　画像の読み込み完了後に Bitmap のインスタンスを作成する
     -------------------------------------------------------------------- */
-    // 上の画像の先読み処理
+    function setLoadAllCallback(elems, callback) {
+        var count = 0;
+        for (var i = 0; i < elems.length; ++i) {
+            elems[i].onload = function () {
+                ++count;
+                if (count == elems.length) {
+                    // All elements have been loaded.
+                    callback(elems);
+                }
+            };
+        }
+    }
+
+    var img = new Image();
+    img.src = "fr2.png";
+
     var baseimg = new Image();
     baseimg.src = "bg2.png";
-    baseimg.onload = function () {
+    setLoadAllCallback([baseimg, img], function (elems) {
+        bitmap = new createjs.Bitmap("fr2.png");
+        bitmap.scaleX = 1.0 // x方向の拡大率変更
+        bitmap.scaleY = 1.0 // y方向の拡大率変更
+        bitmap.alpha = 0.0;
+
         basemap = new createjs.Bitmap(baseimg);
         //basemap.y = 100;
         basemap.scaleX = 1.0 // x方向の拡大率変更
@@ -375,7 +381,7 @@
         if (51 + 38 + 35 == voice_list1.length + voice_list2.length) {
             loaded();
         }
-    };
+    });
 
     /* -----------------------------------------------------------------
         //ストップウォッチ
