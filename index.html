@@ -178,7 +178,7 @@
     //Reset
     window.addEventListener('touchmove', function (event) {
         event.preventDefault();
-    });
+    }, { passive: false });
 
     /* -----------------------------------------------------------------
     言語の取得
@@ -378,8 +378,12 @@
         stretch();
 
         // 画像の読み込みと、音の読み込み総数カウントと総数が一緒になったらStart
-        if (51 + 38 + 35 == voice_list1.length + voice_list2.length) {
-            loaded();
+        if (voice_list1_num + voice_list2_num + voice_list3_num == voice_list1.length + voice_list2.length) {
+            //少し待つ
+            window.setTimeout(function () {
+                loaded();;
+            }, 2000);
+
         }
     });
 
@@ -677,9 +681,12 @@
     /* -----------------------------------------------------------------
     Audio 読み込み
     -------------------------------------------------------------------- */
+    var voice_list1_num = 51;
+    var voice_list2_num = 38
+    var voice_list3_num = 35;
 
     var voice_list1 = [];
-    for (i = 0; i < 51; i++) {
+    for (i = 0; i < voice_list1_num; i++) {
         var voice1 = new Audio();
         voice1.src = './aegi_a/a-' + i + '.mp3'; // 音声ファイルの指定
         voice1.load(); // audioの読み込み
@@ -688,14 +695,14 @@
 
     // voice_list2に集約する
     var voice_list2 = [];
-    for (i = 0; i < 38; i++) {
+    for (i = 0; i < voice_list2_num; i++) {
         var voice2 = new Audio();
         voice2.src = './aegi_b/b-' + i + '.mp3'; // 音声ファイルの指定
         voice2.load(); // audioの読み込み
         voice_list2.push(voice2);
     }
 
-    for (i = 0; i < 35; i++) {
+    for (i = 0; i < voice_list3_num; i++) {
         var voice3 = new Audio();
         voice3.src = './aegi_c/c-' + i + '.mp3'; // 音声ファイルの指定
         voice3.load(); // audioの読み込み
@@ -744,21 +751,20 @@
             }
             dragging = true;
 
-            figmap.x = x0 - canvas.width * 0.25 - 62;
-            figmap.y = y0 - canvas.height * 0.25 - 13;
+            figmap.x = x0 - x_margin - 50;
+            figmap.y = y0 - y_margin - 50;
 
+            //first sound
             previous_num1 = Math.floor(Math.random() * voice_list1.length);
             voice_list1[previous_num1].currentTime = 0;
             voice_list1[previous_num1].volume = 0.4;
             voice_list1[previous_num1].play();
-            // previous_num1 = Math.floor(Math.random() * voice_list1.length);
-            // voice_list1[previous_num1].currentTime = voice_list1[previous_num1].duration;
 
             if (Dist0 < voice_thread) {
-                previous_num2 = Math.floor(Math.random() * 38);
+                previous_num2 = Math.floor(Math.random() * voice_list2_num);
                 voice_list2[previous_num2].volume = 0.8;
             } else {
-                previous_num2 = Math.floor(38 + Math.random() * 35);
+                previous_num2 = Math.floor(voice_list2_num + Math.random() * voice_list3_num);
                 voice_list2[previous_num2].volume = 1.0;
             }
             voice_list2[previous_num2].currentTime = voice_list2[previous_num2].duration;
@@ -769,6 +775,7 @@
 
             //こちらは携帯用のメソッド
             if (event.changedTouches) {
+                //console.log("mobile");
                 xDist = event.changedTouches[0].pageX - x0;
                 yDist = event.changedTouches[0].pageY - y0;
                 x0 = event.changedTouches[0].pageX;
@@ -786,8 +793,8 @@
                 if (figmap.alpha < 1) {
                     figmap.alpha = figmap.alpha + 0.1;
                 }
-                figmap.x = x0 - canvas.width * 0.25 - 62;
-                figmap.y = y0 - canvas.height * 0.25 - 13;
+                figmap.x = x0 - x_margin - 50;
+                figmap.y = y0 - y_margin - 50;
 
                 if (point < 8) {
                     drag();
@@ -797,10 +804,10 @@
                         drag();
                         if (voice_list2[previous_num2].ended) {
                             if (Dist0 < voice_thread) {
-                                previous_num2 = Math.floor(Math.random() * 38);
+                                previous_num2 = Math.floor(Math.random() * voice_list2_num);
                                 voice_list2[previous_num2].volume = 0.8;
                             } else {
-                                previous_num2 = Math.floor(38 + Math.random() * 35);
+                                previous_num2 = Math.floor(voice_list2_num + Math.random() * voice_list3_num);
                                 voice_list2[previous_num2].volume = 1.0;
                             }
                             voice_list2[previous_num2].currentTime = 0;
@@ -817,10 +824,10 @@
                         drag();
                         if (voice_list2[previous_num2].ended) {
                             if (Dist0 < voice_thread) {
-                                previous_num2 = Math.floor(Math.random() * 38);
+                                previous_num2 = Math.floor(Math.random() * voice_list2_num);
                                 voice_list2[previous_num2].volume = 0.8;
                             } else {
-                                previous_num2 = Math.floor(38 + Math.random() * 35);
+                                previous_num2 = Math.floor(voice_list2_num + Math.random() * voice_list3_num);
                                 voice_list2[previous_num2].volume = 1.0;
                             }
                             voice_list2[previous_num2].currentTime = 0;
@@ -837,10 +844,10 @@
 
                         if (voice_list2[previous_num2].ended) {
                             if (Dist0 < voice_thread) {
-                                previous_num2 = Math.floor(Math.random() * 38);
+                                previous_num2 = Math.floor(Math.random() * voice_list2_num);
                                 voice_list2[previous_num2].volume = 0.8;
                             } else {
-                                previous_num2 = Math.floor(38 + Math.random() * 35);
+                                previous_num2 = Math.floor(voice_list2_num + Math.random() * voice_list3_num);
                                 voice_list2[previous_num2].volume = 1.0;
                             }
                             voice_list2[previous_num2].currentTime = 0;
@@ -852,18 +859,6 @@
                             h3_point.scaleY += 0.05;
                         }
                     }
-
-                    ////// Voice2 Check
-                    if (!voice_list2[previous_num2].ended) {
-                        //Voice1 Fadeout
-                        function fadeout() {
-                            var vl = voice_list1[previous_num1].volume;
-                            if (vl > 0) {
-                                voice_list1[previous_num1].volume = Math.floor((vl - 0.1) * 10) / 10;
-                                setTimeout("fadeout()", 10);
-                            }
-                        }
-                    }
                 }
 
                 drag();
@@ -872,14 +867,10 @@
                 ///// Sound Play
                 if (voice_list2[previous_num2].ended) {
                     if (voice_list1[previous_num1].ended) {
-                        if (Dist0 < voice_thread) {
-                            previous_num2 = Math.floor(Math.random() * 38);
-                        } else {
-                            previous_num2 = Math.floor(38 + Math.random() * 35);
-                        }
+                        previous_num1 = Math.floor(Math.random() * voice_list1.length);
                         voice_list1[previous_num1].currentTime = 0;
                         voice_list1[previous_num1].volume = 0.4;
-                        voice_list1[previous_num1].play()
+                        voice_list1[previous_num1].play();
                     }
                 }
             }
@@ -904,8 +895,8 @@
                     if (figmap.alpha < 1) {
                         figmap.alpha = figmap.alpha + 0.1;
                     }
-                    figmap.x = x0 - canvas.width * 0.25 - 62;
-                    figmap.y = y0 - canvas.height * 0.25 - 13;
+                    figmap.x = x0 - x_margin - 50;
+                    figmap.y = y0 - y_margin - 50;
 
                     stage.update();
 
@@ -917,10 +908,10 @@
                             drag();
                             if (voice_list2[previous_num2].ended) {
                                 if (Dist0 < voice_thread) {
-                                    previous_num2 = Math.floor(Math.random() * 38);
+                                    previous_num2 = Math.floor(Math.random() * voice_list2_num);
                                     voice_list2[previous_num2].volume = 0.8;
                                 } else {
-                                    previous_num2 = Math.floor(38 + Math.random() * 35);
+                                    previous_num2 = Math.floor(voice_list2_num + Math.random() * voice_list3_num);
                                     voice_list2[previous_num2].volume = 1.0;
                                 }
                                 voice_list2[previous_num2].currentTime = 0;
@@ -937,10 +928,10 @@
                             drag();
                             if (voice_list2[previous_num2].ended) {
                                 if (Dist0 < voice_thread) {
-                                    previous_num2 = Math.floor(Math.random() * 38);
+                                    previous_num2 = Math.floor(Math.random() * voice_list2_num);
                                     voice_list2[previous_num2].volume = 0.8;
                                 } else {
-                                    previous_num2 = Math.floor(38 + Math.random() * 35);
+                                    previous_num2 = Math.floor(voice_list2_num + Math.random() * voice_list3_num);
                                     voice_list2[previous_num2].volume = 1.0;
                                 }
                                 voice_list2[previous_num2].currentTime = 0;
@@ -957,10 +948,10 @@
                             drag();
                             if (voice_list2[previous_num2].ended) {
                                 if (Dist0 < voice_thread) {
-                                    previous_num2 = Math.floor(Math.random() * 38);
+                                    previous_num2 = Math.floor(Math.random() * voice_list2_num);
                                     voice_list2[previous_num2].volume = 0.8;
                                 } else {
-                                    previous_num2 = Math.floor(38 + Math.random() * 35);
+                                    previous_num2 = Math.floor(voice_list2_num + Math.random() * voice_list3_num);
                                     voice_list2[previous_num2].volume = 1.0;
                                 }
                                 voice_list2[previous_num2].currentTime = 0;
@@ -972,22 +963,10 @@
                                 h3_point.scaleY += 0.05;
                             }
                         }
-
-                        ////// Voice2 Check
-                        if (!voice_list2[previous_num2].ended) {
-                            //Voice1 Fadeout
-                            function fadeout() {
-                                var vl = voice_list1[previous_num1].volume;
-                                if (vl > 0) {
-                                    voice_list1[previous_num1].volume = Math.floor((vl - 0.1) * 10) / 10;
-                                    setTimeout("fadeout()", 10);
-                                }
-                            }
-                        }
                     }
 
                     //Drag中に大きくする
-                    //drag();
+                    drag();
                     stage.update();
 
                     ///// Sound Play
@@ -996,7 +975,7 @@
                             previous_num1 = Math.floor(Math.random() * voice_list1.length);
                             voice_list1[previous_num1].currentTime = 0;
                             voice_list1[previous_num1].volume = 0.4;
-                            voice_list1[previous_num1].play()
+                            voice_list1[previous_num1].play();
                         }
                     }
                 }
@@ -1027,8 +1006,9 @@
         }
 
         //フォームが持つデフォルトの動作をキャンセルするメソッドです。
-        document.ontouchmove = function () { event.preventDefault(); }
+        //document.ontouchmove = function () { event.preventDefault(); }
     }
+
 
     function o_Watch() {
         if (figmap.alpha > 0) {
