@@ -7,6 +7,8 @@
     <title>Document</title>
 
     <script src="https://code.createjs.com/1.0.0/createjs.min.js"></script>
+    <link rel="icon" href="./favicon.ico" id="favicon">
+    <link rel="apple-touch-icon" sizes="180x180" href="./apple-touch-icon-180x180.png">
 </head>
 
 <body>
@@ -264,6 +266,46 @@
 
         });
     };
+
+
+    /* -----------------------------------------------------------------
+    Audio 読み込み
+    -------------------------------------------------------------------- */
+    var voice_list1_num = 51;
+    var voice_list2_num = 38
+    var voice_list3_num = 35;
+
+    var voice_list1 = [];
+    for (i = 0; i < voice_list1_num; i++) {
+        var voice1 = new Audio();
+        voice1.src = './aegi_a/a-' + i + '.mp3'; // 音声ファイルの指定
+        voice1.load(); // audioの読み込み
+        voice_list1.push(voice1);
+    }
+
+    // voice_list2に集約する
+    var voice_list2 = [];
+    for (i = 0; i < voice_list2_num; i++) {
+        var voice2 = new Audio();
+        voice2.src = './aegi_b/b-' + i + '.mp3'; // 音声ファイルの指定
+        voice2.load(); // audioの読み込み
+        voice_list2.push(voice2);
+    }
+
+    for (i = 0; i < voice_list3_num; i++) {
+        var voice3 = new Audio();
+        voice3.src = './aegi_c/c-' + i + '.mp3'; // 音声ファイルの指定
+        voice3.load(); // audioの読み込み
+        voice_list2.push(voice3);
+    }
+
+    // ロード完了時に呼び出し
+    function loaded() {
+        click_func();
+        loop();
+        document.getElementById("close").innerHTML = "START!!!"
+    }
+
 
     /* -----------------------------------------------------------------
     各種オブジェクトの作成
@@ -677,45 +719,6 @@
             circle.scaleY = circle.scaleY + circle.scaleY * 0.01;
         }
     }
-
-    /* -----------------------------------------------------------------
-    Audio 読み込み
-    -------------------------------------------------------------------- */
-    var voice_list1_num = 51;
-    var voice_list2_num = 38
-    var voice_list3_num = 35;
-
-    var voice_list1 = [];
-    for (i = 0; i < voice_list1_num; i++) {
-        var voice1 = new Audio();
-        voice1.src = './aegi_a/a-' + i + '.mp3'; // 音声ファイルの指定
-        voice1.load(); // audioの読み込み
-        voice_list1.push(voice1);
-    }
-
-    // voice_list2に集約する
-    var voice_list2 = [];
-    for (i = 0; i < voice_list2_num; i++) {
-        var voice2 = new Audio();
-        voice2.src = './aegi_b/b-' + i + '.mp3'; // 音声ファイルの指定
-        voice2.load(); // audioの読み込み
-        voice_list2.push(voice2);
-    }
-
-    for (i = 0; i < voice_list3_num; i++) {
-        var voice3 = new Audio();
-        voice3.src = './aegi_c/c-' + i + '.mp3'; // 音声ファイルの指定
-        voice3.load(); // audioの読み込み
-        voice_list2.push(voice3);
-    }
-
-    // ロード完了時に呼び出し
-    function loaded() {
-        click_func();
-        loop();
-        document.getElementById("close").innerHTML = "START!!!"
-    }
-
 
     /* -----------------------------------------------------------------
     Update 値を監視して、常にストレッチを更新する 
