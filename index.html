@@ -271,9 +271,13 @@
     /* -----------------------------------------------------------------
     Audio 読み込み
     -------------------------------------------------------------------- */
-    var voice_list1_num = 51;
-    var voice_list2_num = 38
-    var voice_list3_num = 35;
+    // var voice_list1_num = 51;
+    // var voice_list2_num = 38;
+    // var voice_list3_num = 35;
+
+    var voice_list1_num = 5;
+    var voice_list2_num = 5;
+    var voice_list3_num = 5;
 
     var voice_list1 = [];
     for (i = 0; i < voice_list1_num; i++) {
@@ -740,9 +744,9 @@
 
     window.onload = function () {
         // Click ON
-        //document.getElementById("canvas1").onmousedown = function (event) {
+        // document.getElementById("canvas1").onmousedown = function (event) {
         document.getElementById("canvas1").ontouchstart = function (event) {
-            //console.log('Down');
+            console.log('Down');
 
             if (event.changedTouches) {
                 x0 = event.changedTouches[0].pageX;
@@ -778,7 +782,7 @@
 
             //こちらは携帯用のメソッド
             if (event.changedTouches) {
-                //console.log("mobile");
+                console.log("mobile dragging");
                 xDist = event.changedTouches[0].pageX - x0;
                 yDist = event.changedTouches[0].pageY - y0;
                 x0 = event.changedTouches[0].pageX;
@@ -805,7 +809,7 @@
                     if (h1_Dist < 10) {
                         Dist0 = Dist0 + sesivity;
                         drag();
-                        if (voice_list2[previous_num2].ended) {
+                        if (voice_list2[previous_num2].currentTime > voice_list2[previous_num2].duration * 0.9) {
                             if (Dist0 < voice_thread) {
                                 previous_num2 = Math.floor(Math.random() * voice_list2_num);
                                 voice_list2[previous_num2].volume = 0.8;
@@ -825,7 +829,7 @@
                     if (h2_Dist < 10) {
                         Dist0 = Dist0 + sesivity;
                         drag();
-                        if (voice_list2[previous_num2].ended) {
+                        if (voice_list2[previous_num2].currentTime > voice_list2[previous_num2].duration * 0.9) {
                             if (Dist0 < voice_thread) {
                                 previous_num2 = Math.floor(Math.random() * voice_list2_num);
                                 voice_list2[previous_num2].volume = 0.8;
@@ -845,7 +849,7 @@
                     if (h3_Dist < 10) {
                         Dist0 = Dist0 + sesivity;
 
-                        if (voice_list2[previous_num2].ended) {
+                        if (voice_list2[previous_num2].currentTime > voice_list2[previous_num2].duration * 0.9) {
                             if (Dist0 < voice_thread) {
                                 previous_num2 = Math.floor(Math.random() * voice_list2_num);
                                 voice_list2[previous_num2].volume = 0.8;
@@ -868,8 +872,8 @@
                 stage.update();
 
                 ///// Sound Play
-                if (voice_list2[previous_num2].ended) {
-                    if (voice_list1[previous_num1].ended) {
+                if (voice_list2[previous_num2].currentTime > voice_list2[previous_num2].duration * 0.9) {
+                    if (voice_list1[previous_num1].currentTime > voice_list1[previous_num1].duration * 0.9) {
                         previous_num1 = Math.floor(Math.random() * voice_list1.length);
                         voice_list1[previous_num1].currentTime = 0;
                         voice_list1[previous_num1].volume = 0.4;
@@ -879,8 +883,9 @@
             }
             //こちらはPC用のメソッド
             else {
-                //console.log(dragging);
+                console.log("PC dragging" + dragging);
                 if (dragging == true) {
+                    console.log("OK");
                     xDist = event.pageX - x0;
                     yDist = event.pageY - y0;
                     x0 = event.pageX;
@@ -902,14 +907,14 @@
                     figmap.y = y0 - y_margin - 50;
 
                     stage.update();
-
+                    console.log("next");
                     if (point < 8) {
                         drag();
                         Dist0 = Dist0 + 0.3;
                         if (h1_Dist < 10) {
                             Dist0 = Dist0 + sesivity;
                             drag();
-                            if (voice_list2[previous_num2].ended) {
+                            if (voice_list2[previous_num2].currentTime > voice_list2[previous_num2].duration * 0.9) {
                                 if (Dist0 < voice_thread) {
                                     previous_num2 = Math.floor(Math.random() * voice_list2_num);
                                     voice_list2[previous_num2].volume = 0.8;
@@ -929,7 +934,7 @@
                         if (h2_Dist < 10) {
                             Dist0 = Dist0 + sesivity;
                             drag();
-                            if (voice_list2[previous_num2].ended) {
+                            if (voice_list2[previous_num2].currentTime > voice_list2[previous_num2].duration * 0.9) {
                                 if (Dist0 < voice_thread) {
                                     previous_num2 = Math.floor(Math.random() * voice_list2_num);
                                     voice_list2[previous_num2].volume = 0.8;
@@ -948,8 +953,8 @@
 
                         if (h3_Dist < 10) {
                             Dist0 = Dist0 + sesivity;
-                            drag();
-                            if (voice_list2[previous_num2].ended) {
+
+                            if (voice_list2[previous_num2].currentTime > voice_list2[previous_num2].duration * 0.9) {
                                 if (Dist0 < voice_thread) {
                                     previous_num2 = Math.floor(Math.random() * voice_list2_num);
                                     voice_list2[previous_num2].volume = 0.8;
@@ -967,14 +972,18 @@
                             }
                         }
                     }
-
+                    console.log("end");
                     //Drag中に大きくする
                     drag();
                     stage.update();
+                    console.log("voice_list2[previous_num2].currentTime" + voice_list2[previous_num2].currentTime);
+                    console.log("voice_list2[previous_num2].duration" + voice_list2[previous_num2].duration);
 
                     ///// Sound Play
-                    if (voice_list2[previous_num2].ended) {
-                        if (voice_list1[previous_num1].ended) {
+                    if (voice_list2[previous_num2].currentTime > voice_list2[previous_num2].duration * 0.9) {
+                        console.log("a");
+                        if (voice_list1[previous_num1].currentTime > voice_list1[previous_num1].duration * 0.9) {
+                            console.log("b");
                             previous_num1 = Math.floor(Math.random() * voice_list1.length);
                             voice_list1[previous_num1].currentTime = 0;
                             voice_list1[previous_num1].volume = 0.4;
