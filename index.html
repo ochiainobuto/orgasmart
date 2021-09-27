@@ -233,10 +233,11 @@
             modal.classList.add('hidden');
             mask.classList.add('hidden');
 
-            // var music = new Audio();
-            // music.src = './Super Nova.mp3'; // 音声ファイルの指定
-            // music.load(); // audioの読み込み
-            // music.play();
+            var music = new Audio();
+            music.src = './aegi_a/a-0.mp3'; // 音声ファイルの指定
+            music.load(); // audioの読み込み
+            music.play();
+
             o_value = 0.0;
             Dist0 = 0;
             Dist1 = 0;
@@ -765,7 +766,7 @@
             previous_num1 = Math.floor(Math.random() * voice_list1.length);
             voice_list1[previous_num1].currentTime = 0;
             voice_list1[previous_num1].volume = 0.4;
-            voice_list1[previous_num1].play().catch((err) => alert(err));
+            voice_list1[previous_num1].play();
 
             if (Dist0 < voice_thread) {
                 previous_num2 = Math.floor(Math.random() * voice_list2_num);
@@ -818,7 +819,7 @@
                                 voice_list2[previous_num2].volume = 1.0;
                             }
                             voice_list2[previous_num2].currentTime = 0;
-                            voice_list2[previous_num2].play().catch((err) => alert(err));
+                            voice_list2[previous_num2].play();
                         }
                         if (h1_point.scaleX < 4.0) {
                             h1_point.scaleX += 0.05;
@@ -838,7 +839,7 @@
                                 voice_list2[previous_num2].volume = 1.0;
                             }
                             voice_list2[previous_num2].currentTime = 0;
-                            voice_list2[previous_num2].play().catch((err) => alert(err));
+                            voice_list2[previous_num2].play();
                         }
                         if (h2_point.scaleX < 4.0) {
                             h2_point.scaleX += 0.05;
@@ -858,7 +859,7 @@
                                 voice_list2[previous_num2].volume = 1.0;
                             }
                             voice_list2[previous_num2].currentTime = 0;
-                            voice_list2[previous_num2].play().catch((err) => alert(err));
+                            voice_list2[previous_num2].play();
                         }
 
                         if (h3_point.scaleX < 2.0) {
@@ -877,7 +878,7 @@
                         previous_num1 = Math.floor(Math.random() * voice_list1.length);
                         voice_list1[previous_num1].currentTime = 0;
                         voice_list1[previous_num1].volume = 0.4;
-                        voice_list1[previous_num1].play().catch((err) => alert(err));
+                        voice_list1[previous_num1].play();
                     }
                 }
             }
@@ -922,7 +923,7 @@
                                     voice_list2[previous_num2].volume = 1.0;
                                 }
                                 voice_list2[previous_num2].currentTime = 0;
-                                voice_list2[previous_num2].play().catch((err) => alert(err));
+                                voice_list2[previous_num2].play();
                             }
                             if (h1_point.scaleX < 4.0) {
                                 h1_point.scaleX += 0.05;
@@ -942,7 +943,7 @@
                                     voice_list2[previous_num2].volume = 1.0;
                                 }
                                 voice_list2[previous_num2].currentTime = 0;
-                                voice_list2[previous_num2].play().catch((err) => alert(err));
+                                voice_list2[previous_num2].play();
                             }
                             if (h2_point.scaleX < 4.0) {
                                 h2_point.scaleX += 0.05;
@@ -962,7 +963,7 @@
                                     voice_list2[previous_num2].volume = 1.0;
                                 }
                                 voice_list2[previous_num2].currentTime = 0;
-                                voice_list2[previous_num2].play().catch((err) => alert(err));
+                                voice_list2[previous_num2].play();
                             }
 
                             if (h3_point.scaleX < 2.0) {
@@ -971,7 +972,6 @@
                             }
                         }
                     }
-
                     //Drag中に大きくする
                     drag();
                     stage.update();
@@ -982,7 +982,7 @@
                             previous_num1 = Math.floor(Math.random() * voice_list1.length);
                             voice_list1[previous_num1].currentTime = 0;
                             voice_list1[previous_num1].volume = 0.4;
-                            voice_list1[previous_num1].play().catch((err) => alert(err));
+                            voice_list1[previous_num1].play();
                         }
                     }
                 }
