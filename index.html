@@ -233,10 +233,16 @@
             modal.classList.add('hidden');
             mask.classList.add('hidden');
 
-            var music = new Audio();
-            music.src = './aegi_a/a-0.mp3'; // 音声ファイルの指定
-            music.load(); // audioの読み込み
-            music.play().catch((err) => alert(err));
+            //Safariのためにクリックで一度全部再生しておく。
+            for (i = 0; i < voice_list1.count; i++) {
+                voice_list1[i].play();
+                voice_list1[i].pause();
+            }
+            var voice_list2 = [];
+            for (i = 0; i < voice_list2.count; i++) {
+                voice_list2[i].play();
+                voice_list2[i].pause();
+            }
 
             o_value = 0.0;
             Dist0 = 0;
@@ -301,6 +307,7 @@
         var voice3 = new Audio();
         voice3.src = './aegi_c/c-' + i + '.mp3'; // 音声ファイルの指定
         voice3.load(); // audioの読み込み
+
         voice_list2.push(voice3);
     }
 
@@ -819,7 +826,7 @@
                                 voice_list2[previous_num2].volume = 1.0;
                             }
                             voice_list2[previous_num2].currentTime = 0;
-                            voice_list2[previous_num2].play().catch((err) => alert(err));
+                            voice_list2[previous_num2].play();
                         }
                         if (h1_point.scaleX < 4.0) {
                             h1_point.scaleX += 0.05;
@@ -839,7 +846,7 @@
                                 voice_list2[previous_num2].volume = 1.0;
                             }
                             voice_list2[previous_num2].currentTime = 0;
-                            voice_list2[previous_num2].play().catch((err) => alert(err));
+                            voice_list2[previous_num2].play();
                         }
                         if (h2_point.scaleX < 4.0) {
                             h2_point.scaleX += 0.05;
@@ -859,7 +866,7 @@
                                 voice_list2[previous_num2].volume = 1.0;
                             }
                             voice_list2[previous_num2].currentTime = 0;
-                            voice_list2[previous_num2].play().catch((err) => alert(err));
+                            voice_list2[previous_num2].play();
                         }
 
                         if (h3_point.scaleX < 2.0) {
@@ -878,7 +885,7 @@
                         previous_num1 = Math.floor(Math.random() * voice_list1.length);
                         voice_list1[previous_num1].currentTime = 0;
                         voice_list1[previous_num1].volume = 0.4;
-                        voice_list1[previous_num1].play().catch((err) => alert(err));
+                        voice_list1[previous_num1].play();
                     }
                 }
             }
