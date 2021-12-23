@@ -206,7 +206,7 @@
 
 
     /* -----------------------------------------------------------------
-    スタートの警告
+    スタート
     -------------------------------------------------------------------- */
 
     window.addEventListener("load", function () {
@@ -244,6 +244,7 @@
                 voice_list2[i].pause();
             }
 
+            //各種Init
             o_value = 0.0;
             Dist0 = 0;
             Dist1 = 0;
@@ -497,8 +498,6 @@
                 }
             }
         }
-
-
     }
 
     /* -----------------------------------------------------------------    
@@ -745,56 +744,156 @@
     var previous_num1;
     var previous_num2;
 
-    var sesivity = 0.1;
+    var sesivity = 0.2;
     var voice_thread = 40;
     var _start = new Date();	// 経過時間を退避
 
+    //Click Method
+    function down() {
+        console.log('Down');
 
-    window.onload = function () {
-        // Click ON
-        // document.getElementById("canvas1").onmousedown = function (event) {
-        document.getElementById("canvas1").ontouchstart = function (event) {
-            console.log('Down');
+        if (event.changedTouches) {
+            x0 = event.changedTouches[0].pageX;
+            y0 = event.changedTouches[0].pageY;
+        }
+        else {
+            x0 = event.pageX;
+            y0 = event.pageY;
+        }
+        dragging = true;
 
-            if (event.changedTouches) {
-                x0 = event.changedTouches[0].pageX;
-                y0 = event.changedTouches[0].pageY;
+        figmap.x = x0 - x_margin - 50;
+        figmap.y = y0 - y_margin - 50;
+
+        //first sound
+        previous_num1 = Math.floor(Math.random() * voice_list1.length);
+        voice_list1[previous_num1].currentTime = 0;
+        voice_list1[previous_num1].volume = 0.4;
+        voice_list1[previous_num1].play().catch((err) => alert(err));
+
+        if (Dist0 < voice_thread) {
+            previous_num2 = Math.floor(Math.random() * voice_list2_num);
+            voice_list2[previous_num2].volume = 0.8;
+        } else {
+            previous_num2 = Math.floor(voice_list2_num + Math.random() * voice_list3_num);
+            voice_list2[previous_num2].volume = 1.0;
+        }
+        voice_list2[previous_num2].currentTime = voice_list2[previous_num2].duration;
+
+    }
+
+    //Drag Method
+    function onmove() {
+        //こちらは携帯用のメソッド
+        if (event.changedTouches) {
+            console.log("mobile dragging");
+            xDist = event.changedTouches[0].pageX - x0;
+            yDist = event.changedTouches[0].pageY - y0;
+            x0 = event.changedTouches[0].pageX;
+            y0 = event.changedTouches[0].pageY;
+
+            ///////// 感度のメソッド //////////
+            var point = Math.abs(xDist) + Math.abs(yDist)
+            var x_margin = document.getElementById("canvas1").getBoundingClientRect().left;
+            var y_margin = document.getElementById("canvas1").getBoundingClientRect().top;
+
+            var h1_Dist = Math.sqrt(Math.pow((x0 - x_margin) - h1_point.x, 2) + Math.pow((y0 - y_margin) - h1_point.y, 2));
+            var h2_Dist = Math.sqrt(Math.pow((x0 - x_margin) - h2_point.x, 2) + Math.pow((y0 - y_margin) - h2_point.y, 2));
+            var h3_Dist = Math.sqrt(Math.pow((x0 - x_margin) - h3_point.x, 2) + Math.pow((y0 - y_margin) - h3_point.y, 2));
+
+            if (figmap.alpha < 1) {
+                figmap.alpha = figmap.alpha + 0.1;
             }
-            else {
-                x0 = event.pageX;
-                y0 = event.pageY;
-            }
-            dragging = true;
-
             figmap.x = x0 - x_margin - 50;
             figmap.y = y0 - y_margin - 50;
 
-            //first sound
-            previous_num1 = Math.floor(Math.random() * voice_list1.length);
-            voice_list1[previous_num1].currentTime = 0;
-            voice_list1[previous_num1].volume = 0.4;
-            voice_list1[previous_num1].play().catch((err) => alert(err));
+            if (point < 8) {
+                drag();
+                Dist0 = Dist0 + 0.3;
+                if (h1_Dist < 10) {
+                    Dist0 = Dist0 + sesivity;
+                    drag();
+                    if (voice_list2[previous_num2].currentTime > voice_list2[previous_num2].duration * 0.9) {
+                        if (Dist0 < voice_thread) {
+                            previous_num2 = Math.floor(Math.random() * voice_list2_num);
+                            voice_list2[previous_num2].volume = 0.8;
+                        } else {
+                            previous_num2 = Math.floor(voice_list2_num + Math.random() * voice_list3_num);
+                            voice_list2[previous_num2].volume = 1.0;
+                        }
+                        voice_list2[previous_num2].currentTime = 0;
+                        voice_list2[previous_num2].play();
+                    }
+                    if (h1_point.scaleX < 4.0) {
+                        h1_point.scaleX += 0.05;
+                        h1_point.scaleY += 0.05;
+                    }
+                }
 
-            if (Dist0 < voice_thread) {
-                previous_num2 = Math.floor(Math.random() * voice_list2_num);
-                voice_list2[previous_num2].volume = 0.8;
-            } else {
-                previous_num2 = Math.floor(voice_list2_num + Math.random() * voice_list3_num);
-                voice_list2[previous_num2].volume = 1.0;
+                if (h2_Dist < 10) {
+                    Dist0 = Dist0 + sesivity;
+                    drag();
+                    if (voice_list2[previous_num2].currentTime > voice_list2[previous_num2].duration * 0.9) {
+                        if (Dist0 < voice_thread) {
+                            previous_num2 = Math.floor(Math.random() * voice_list2_num);
+                            voice_list2[previous_num2].volume = 0.8;
+                        } else {
+                            previous_num2 = Math.floor(voice_list2_num + Math.random() * voice_list3_num);
+                            voice_list2[previous_num2].volume = 1.0;
+                        }
+                        voice_list2[previous_num2].currentTime = 0;
+                        voice_list2[previous_num2].play();
+                    }
+                    if (h2_point.scaleX < 4.0) {
+                        h2_point.scaleX += 0.05;
+                        h2_point.scaleY += 0.05;
+                    }
+                }
+
+                if (h3_Dist < 10) {
+                    Dist0 = Dist0 + sesivity;
+                    drag();
+                    if (voice_list2[previous_num2].currentTime > voice_list2[previous_num2].duration * 0.9) {
+                        if (Dist0 < voice_thread) {
+                            previous_num2 = Math.floor(Math.random() * voice_list2_num);
+                            voice_list2[previous_num2].volume = 0.8;
+                        } else {
+                            previous_num2 = Math.floor(voice_list2_num + Math.random() * voice_list3_num);
+                            voice_list2[previous_num2].volume = 1.0;
+                        }
+                        voice_list2[previous_num2].currentTime = 0;
+                        voice_list2[previous_num2].play();
+                    }
+
+                    if (h3_point.scaleX < 2.0) {
+                        h3_point.scaleX += 0.05;
+                        h3_point.scaleY += 0.05;
+                    }
+                }
             }
-            voice_list2[previous_num2].currentTime = voice_list2[previous_num2].duration;
-        }
-        //Drag Over
-        //document.getElementById("canvas1").onmousemove = function (event) {
-        document.getElementById("canvas1").ontouchmove = function (event) {
 
-            //こちらは携帯用のメソッド
-            if (event.changedTouches) {
-                console.log("mobile dragging");
-                xDist = event.changedTouches[0].pageX - x0;
-                yDist = event.changedTouches[0].pageY - y0;
-                x0 = event.changedTouches[0].pageX;
-                y0 = event.changedTouches[0].pageY;
+            drag();
+            stage.update();
+
+            ///// Sound Play
+            if (voice_list2[previous_num2].currentTime > voice_list2[previous_num2].duration * 0.9) {
+                if (voice_list1[previous_num1].currentTime > voice_list1[previous_num1].duration * 0.9) {
+                    previous_num1 = Math.floor(Math.random() * voice_list1.length);
+                    voice_list1[previous_num1].currentTime = 0;
+                    voice_list1[previous_num1].volume = 0.4;
+                    voice_list1[previous_num1].play();
+                }
+            }
+        }
+        //こちらはPC用のメソッド
+        else {
+            console.log("PC dragging" + dragging);
+            if (dragging == true) {
+                console.log("OK");
+                xDist = event.pageX - x0;
+                yDist = event.pageY - y0;
+                x0 = event.pageX;
+                y0 = event.pageY;
 
                 ///////// 感度のメソッド //////////
                 var point = Math.abs(xDist) + Math.abs(yDist)
@@ -811,6 +910,7 @@
                 figmap.x = x0 - x_margin - 50;
                 figmap.y = y0 - y_margin - 50;
 
+                stage.update();
                 if (point < 8) {
                     drag();
                     Dist0 = Dist0 + 0.3;
@@ -875,7 +975,7 @@
                         }
                     }
                 }
-
+                //Drag中に大きくする
                 drag();
                 stage.update();
 
@@ -889,140 +989,74 @@
                     }
                 }
             }
-            //こちらはPC用のメソッド
-            else {
-                console.log("PC dragging" + dragging);
-                if (dragging == true) {
-                    console.log("OK");
-                    xDist = event.pageX - x0;
-                    yDist = event.pageY - y0;
-                    x0 = event.pageX;
-                    y0 = event.pageY;
+        }
 
-                    ///////// 感度のメソッド //////////
-                    var point = Math.abs(xDist) + Math.abs(yDist)
-                    var x_margin = document.getElementById("canvas1").getBoundingClientRect().left;
-                    var y_margin = document.getElementById("canvas1").getBoundingClientRect().top;
-
-                    var h1_Dist = Math.sqrt(Math.pow((x0 - x_margin) - h1_point.x, 2) + Math.pow((y0 - y_margin) - h1_point.y, 2));
-                    var h2_Dist = Math.sqrt(Math.pow((x0 - x_margin) - h2_point.x, 2) + Math.pow((y0 - y_margin) - h2_point.y, 2));
-                    var h3_Dist = Math.sqrt(Math.pow((x0 - x_margin) - h3_point.x, 2) + Math.pow((y0 - y_margin) - h3_point.y, 2));
-
-                    if (figmap.alpha < 1) {
-                        figmap.alpha = figmap.alpha + 0.1;
-                    }
-                    figmap.x = x0 - x_margin - 50;
-                    figmap.y = y0 - y_margin - 50;
-
-                    stage.update();
-                    if (point < 8) {
-                        drag();
-                        Dist0 = Dist0 + 0.3;
-                        if (h1_Dist < 10) {
-                            Dist0 = Dist0 + sesivity;
-                            drag();
-                            if (voice_list2[previous_num2].currentTime > voice_list2[previous_num2].duration * 0.9) {
-                                if (Dist0 < voice_thread) {
-                                    previous_num2 = Math.floor(Math.random() * voice_list2_num);
-                                    voice_list2[previous_num2].volume = 0.8;
-                                } else {
-                                    previous_num2 = Math.floor(voice_list2_num + Math.random() * voice_list3_num);
-                                    voice_list2[previous_num2].volume = 1.0;
-                                }
-                                voice_list2[previous_num2].currentTime = 0;
-                                voice_list2[previous_num2].play();
-                            }
-                            if (h1_point.scaleX < 4.0) {
-                                h1_point.scaleX += 0.05;
-                                h1_point.scaleY += 0.05;
-                            }
-                        }
-
-                        if (h2_Dist < 10) {
-                            Dist0 = Dist0 + sesivity;
-                            drag();
-                            if (voice_list2[previous_num2].currentTime > voice_list2[previous_num2].duration * 0.9) {
-                                if (Dist0 < voice_thread) {
-                                    previous_num2 = Math.floor(Math.random() * voice_list2_num);
-                                    voice_list2[previous_num2].volume = 0.8;
-                                } else {
-                                    previous_num2 = Math.floor(voice_list2_num + Math.random() * voice_list3_num);
-                                    voice_list2[previous_num2].volume = 1.0;
-                                }
-                                voice_list2[previous_num2].currentTime = 0;
-                                voice_list2[previous_num2].play();
-                            }
-                            if (h2_point.scaleX < 4.0) {
-                                h2_point.scaleX += 0.05;
-                                h2_point.scaleY += 0.05;
-                            }
-                        }
-
-                        if (h3_Dist < 10) {
-                            Dist0 = Dist0 + sesivity;
-                            drag();
-                            if (voice_list2[previous_num2].currentTime > voice_list2[previous_num2].duration * 0.9) {
-                                if (Dist0 < voice_thread) {
-                                    previous_num2 = Math.floor(Math.random() * voice_list2_num);
-                                    voice_list2[previous_num2].volume = 0.8;
-                                } else {
-                                    previous_num2 = Math.floor(voice_list2_num + Math.random() * voice_list3_num);
-                                    voice_list2[previous_num2].volume = 1.0;
-                                }
-                                voice_list2[previous_num2].currentTime = 0;
-                                voice_list2[previous_num2].play();
-                            }
-
-                            if (h3_point.scaleX < 2.0) {
-                                h3_point.scaleX += 0.05;
-                                h3_point.scaleY += 0.05;
-                            }
-                        }
-                    }
-                    //Drag中に大きくする
-                    drag();
-                    stage.update();
-
-                    ///// Sound Play
-                    if (voice_list2[previous_num2].currentTime > voice_list2[previous_num2].duration * 0.9) {
-                        if (voice_list1[previous_num1].currentTime > voice_list1[previous_num1].duration * 0.9) {
-                            previous_num1 = Math.floor(Math.random() * voice_list1.length);
-                            voice_list1[previous_num1].currentTime = 0;
-                            voice_list1[previous_num1].volume = 0.4;
-                            voice_list1[previous_num1].play();
-                        }
-                    }
-                }
+        /// ストレッチ
+        if (event.changedTouches) {
+            if (baseDistance) {
+                // 変化後の距離
+                var movedDistance = getDistance(event);
+            } else {
+                // 基本の距離
+                baseDistance = getDistance(event);
             }
+            if (movedDistance / baseDistance > 0) {
+                bitmap.scaleX += 0.04;
+            }
+        }
+    }
 
-            /// ストレッチ
-            if (event.changedTouches) {
-                if (baseDistance) {
-                    // 変化後の距離
-                    var movedDistance = getDistance(event);
-                } else {
-                    // 基本の距離
-                    baseDistance = getDistance(event);
-                }
-                if (movedDistance / baseDistance > 0) {
-                    bitmap.scaleX += 0.04;
-                }
+    window.onload = function () {
+
+        //Click 
+        //Check Mobile or PC
+        if (navigator.userAgent.match(/iPhone|Android.+Mobile/)) {
+            document.getElementById("canvas1").ontouchstart = function (event) {
+                down();
+            }
+        } else {
+            document.getElementById("canvas1").onmousedown = function (event) {
+                down();
+            }
+        }
+
+        //Drag Over
+        //Check Mobile or PC
+        if (navigator.userAgent.match(/iPhone|Android.+Mobile/)) {
+            document.getElementById("canvas1").ontouchmove = function (event) {
+                onmove();
+            }
+        } else {
+            document.getElementById("canvas1").onmousemove = function (event) {
+                onmove();
             }
         }
 
         //Mouse UP
-        //document.getElementById("canvas1").onmouseup = function (event) {
-        document.getElementById("canvas1").touchend = function (event) {
-            figmap.alpha = 0.0;
-            xDist = 0;
-            yDist = 0;
-            dragging = false;
+        //Check Mobile or PC
+        if (navigator.userAgent.match(/iPhone|Android.+Mobile/)) {
+                document.getElementById("canvas1").touchend = function (event) {
+                figmap.alpha = 0.0;
+                xDist = 0;
+                yDist = 0;
+                dragging = false;
+            }
+        } else {
+            document.getElementById("canvas1").onmouseup = function (event) {
+                figmap.alpha = 0.0;
+                xDist = 0;
+                yDist = 0;
+                dragging = false;
+            }
         }
 
         //フォームが持つデフォルトの動作をキャンセルするメソッドです。
         //document.ontouchmove = function () { event.preventDefault(); }
     }
 
+    /* -----------------------------------------------------------------
+    スコアを計算
+    -------------------------------------------------------------------- */
 
     function o_Watch() {
         if (figmap.alpha > 0) {
