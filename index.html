@@ -191,17 +191,17 @@
         window.navigator.browserLanguage;
 
     /* -----------------------------------------------------------------
-    ヴァギナを触って、オーガズムに達してください。早く動かすよりもゆっくり動かすほうが感じます。
-    動かしながらランダムに位置が変わる感じるポイントを探してください。
-    感じるポイントは、声が大きくなり、赤いグラフが上昇します。
-    そのポイントを指で触りながら、オーガズムに導いてください。
+    1. 携帯を足元に置いてください。
+    2. カメラ見える距離に立ってください。
+    3. スイングの姿勢をとってください。
+    4. 弾が出てくるとスイングできます。
     -------------------------------------------------------------------- */
 
     if (language == "ja") {
-        document.getElementById("message").innerHTML = "<p><br>Touch the vagina to reach orgasm. It feels better to move slowly than to move fast.<br>Look for a point where you can feel the position change randomly while moving.<br>The point you feel is that your voice becomes louder and the red graph rises.<br>Please guide to orgasm while touching that point with your finger.</p>";
+        document.getElementById("message").innerHTML = "<p><br>男性の皆さん、クリトリスは感じるポイントが毎回違います。<br>感じるポイントは、声が大きくなり、赤いグラフが上昇します。<br>早く動かすよりもゆっくり動かすほうが感じます。<br>そのポイントを指で触りながら、オーガズムに導いてください。</p>";
     }
     else {
-        document.getElementById("message").innerHTML = "<p><br>ヴァギナを触って、オーガズムに達してください。早く動かすよりもゆっくり動かすほうが感じます。<br>動かしながらランダムに位置が変わる感じるポイントを探してください。<br>感じるポイントは、声が大きくなり、赤いグラフが上昇します。<br>そのポイントを指で触りながら、オーガズムに導いてください。</p>";
+        document.getElementById("message").innerHTML = "<p><br>Men, the clitoris feels different every time. <br>The point you feel is that your voice gets louder and the red graph rises. <br>It feels better to move slowly than to move fast. <br>While touching that point with your finger, guide it to orgasm.</p>";
     }
 
 
@@ -225,6 +225,8 @@
     var myStart;
     var myStop;
     var playing;
+
+    
 
     function click_func() {
         close.addEventListener('click', function () {
@@ -260,9 +262,9 @@
             h2_point.y = canvas.height * 0.6 + Math.floor((Math.random() * 2 - 1) * (canvas.height - y_margin) * 0.2);
             h3_point_x = canvas.width * 0.5 + Math.floor((Math.random() * 2 - 1) * (canvas.width - x_margin) * 0.05);
             h3_point.y = canvas.height * 0.6 + Math.floor((Math.random() * 2 - 1) * (canvas.height - y_margin) * 0.2);
-            h1_point.alpha = 0.5;
-            h2_point.alpha = 0.5;
-            h3_point.alpha = 0.5;
+            h1_point.alpha = 0.0;
+            h2_point.alpha = 0.0;
+            h3_point.alpha = 0.0;
 
             previous_num1 = Math.floor(Math.random() * voice_list1.length);
             voice_list1[previous_num1].currentTime = voice_list1[previous_num1].duration;
@@ -270,7 +272,7 @@
             previous_num2 = Math.floor(Math.random() * voice_list2.length);
             voice_list2[previous_num2].currentTime = voice_list2[previous_num2].duration;
 
-            stopwatch_time = 20;
+            stopwatch_time = limitTime;
 
         });
     };
@@ -329,7 +331,7 @@
     var _ctx = _canvas.getContext('2d');
 
     var stage = new createjs.Stage(canvas); // Stage クラスのインスタンスを作成する
-    //var _stage = new createjs.Stage(_canvas); // Stage クラスのインスタンスを作成する
+    // var _stage = new createjs.Stage(_canvas); // Stage クラスのインスタンスを作成する
 
     // var stopW_text = new createjs.Text("Time:", "20px Arial", "#ff7700"); // Text クラスのインスタンスを作成する
     // stopW_text.textAlign = "end";
@@ -408,8 +410,14 @@
     img.src = "fr2.png";
 
     var baseimg = new Image();
+    // var _baseimg = new Image();
     baseimg.src = "bg2.png";
+    // _baseimg.src = "vagina.png";
+
     setLoadAllCallback([baseimg, img], function (elems) {
+        // _basemap = new createjs.Bitmap(_baseimg);
+        // _stage.addChild(_basemap);
+
         bitmap = new createjs.Bitmap("fr2.png");
         bitmap.scaleX = 1.0 // x方向の拡大率変更
         bitmap.scaleY = 1.0 // y方向の拡大率変更
@@ -445,7 +453,8 @@
     /* -----------------------------------------------------------------
         //ストップウォッチ
         -------------------------------------------------------------------- */
-    var stopwatch_time;
+    var limitTime = 60;
+    var stopwatch_time = limitTime;
 
     function stopWatch() {
         //o_valueが1.0を越えたらゴール
@@ -463,9 +472,11 @@
             if (language == "ja") {
                 document.getElementById("message").innerHTML = "<br><h2 align='center'>Congrats!</h2>イかせました！<br>あなたはテクニシャンです！"
             }
-            else {
+            else 
+            {
                 document.getElementById("message").innerHTML = "<br><h2 align='center'>Congrats!</h2>GET ORGAZM!<br>You are a technician!"
             }
+
             document.getElementById('modal').style.backgroundImage = 'url("./girl_png/girl004.png")';
 
         } else {
@@ -744,7 +755,8 @@
     var previous_num1;
     var previous_num2;
 
-    var sesivity = 0.2;
+    var sesivity = 0.3;
+    var decrease = 0.1
     var voice_thread = 40;
     var _start = new Date();	// 経過時間を退避
 
@@ -809,8 +821,8 @@
 
             if (point < 8) {
                 drag();
-                Dist0 = Dist0 + 0.3;
-                if (h1_Dist < 10) {
+                //Dist0 = Dist0 + 0.3;
+                if (h1_Dist < 20) {
                     Dist0 = Dist0 + sesivity;
                     drag();
                     if (voice_list2[previous_num2].currentTime > voice_list2[previous_num2].duration * 0.9) {
@@ -913,7 +925,7 @@
                 stage.update();
                 if (point < 8) {
                     drag();
-                    Dist0 = Dist0 + 0.3;
+                    //Dist0 = Dist0 + 0.3;
                     if (h1_Dist < 10) {
                         Dist0 = Dist0 + sesivity;
                         drag();
@@ -1065,7 +1077,7 @@
 
         ///////// 感度の減少メソッド //////////
         if (Dist0 > 0) {
-            Dist0 = Dist0 - 0.2;
+            Dist0 = Dist0 - decrease;
         } else {
             Dist0 = 0;
         }
@@ -1088,12 +1100,12 @@
         _ctx.lineWidth = 1;
 
         // 最新から 300px 分のデータを取りだす。
-        var varr = [];
-        if (arr.length > _canvas.clientWidth) {
-            varr = arr.slice(-_canvas.clientWidth, -1);
-        } else {
-            varr = arr;
-        }
+        // var varr = [];
+        // if (arr.length > _canvas.clientWidth) {
+        //     varr = arr.slice(-_canvas.clientWidth, -1);
+        // } else {
+        //     varr = arr;
+        // }
 
         //軌跡
         // for ( idx in varr ){
